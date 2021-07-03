@@ -17,6 +17,8 @@ mathjax: true
 
 
 
+<br/>
+
 <!--more-->
 
 **Title**: [Efficient k-nearest neighbor graph construction for generic similarity measures.](https://doi.org/10.1145/1963405.1963487)
@@ -120,7 +122,7 @@ mathjax: true
 
   基础算法中，若某次迭代近邻图未更新则算法终止。然而，如下图所示，近邻搜索算法随着召回率逼近 100%，需要更多次迭代才能获得略微提升，考虑到召回率和搜索性能的取舍，这些迭代其实没必要执行。为了解决这个问题，本文采取的方案是：在每次迭代中，统计近邻图更新次数 count，当 count < δKN 时终止程序。其中 δ 是精度参数，它粗略反应了由于提前终止允许错过的真正的近邻的比例。
 
-  <img src=".\pic\NN-Descent论文浅析\glove.png" alt="glove" style="zoom: 33%;" />
+  <img src="glove.png" alt="glove" style="zoom: 33%;" />
 
 * **Full Algorithm**
 
@@ -175,7 +177,7 @@ mathjax: true
 
 * 缺点：NN-Descent 在本征维度较高的数据集上表现较差，适用于本征维度较低的数据集。
 
-  <img src=".\pic\NN-Descent论文浅析\dim.png" alt="dim" style="zoom: 50%;" />
+  <img src="dim.png" alt="dim" style="zoom: 50%;" />
 
   
 
@@ -203,7 +205,7 @@ mathjax: true
 
       * $|B_r(v) \leq c|B_{r/2}(v)|, |B_r(v') \leq c|B_{r/2}(v')| \leq c|B_r(v)| \leq c^2|B_{r/2}(v)|$。（由于 $v'$ 在 $v$ 的 $r/2$ 超球中，$v'$ 的 $r/2$ 超球一定包含于 $v$ 的 $r$ 超球中）。
 
-      <img src=".\pic\NN-Descent论文浅析\NN-Descent1.jpg" alt="NN-Descent1" style="zoom:15%;" />
+      <img src="NN-Descent1.jpg" alt="NN-Descent1" style="zoom:15%;" />
 
     * 由以上三个不等式可得：$P\{v'\in B[v] \land u \in B[v']\} \geq K/ |B_{r/2}(v)|^2$，因此，当 $v$ 的邻居从 $B_{r/2}(v)$ 中取时，在 $B_{r/2}(v)$ 中的一点 $u$ 属于 $v$ 的邻居的邻居的概率为：$P\{u\in B'[v]\} \geq 1- (1-K/|B_{r/2}(v)|^2)^{|B_{r/2}(v)} \approx K/|B_{r/2}(v)|$
 
