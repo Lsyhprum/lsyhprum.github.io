@@ -8,34 +8,22 @@ tags:
 mathjax: true
 ---
 
-### Introduction
+# Introduction
 
-该论文提出了一个 **基于局部搜索的K-近邻图（K-NNG）构建算法**，用于解决之前 K-NNG 构建算法存在的两个问题：
+本文针对 **K-近邻图算法（K-NNG）构建算法** 存在的两个主要问题：
 
 * 需要全局索引信息，算法无法并行执行，因此**不适合大规模数据**
 * **只适用于特定度量方法**
 
-
-
-<br/>
+提出了一种基于局部搜索的K-近邻图（K-NNG）构建算法，**NN-Descent**。该算法可用于大规模数据，并支持分布式计算环境，同时适用于任意的度量方法。
 
 <!--more-->
 
-**Title**: [Efficient k-nearest neighbor graph construction for generic similarity measures.](https://doi.org/10.1145/1963405.1963487)
-
-**Affiliations**: *Princeton University*
-
-**Journal**: *WWW ' 2011*
-
-**Key Words**：*arbitrary similarity measure, iterative method, k-nearest neighbor graph, information storage and retrieval.*
-
-
-
-### Algorithms
+# Algorithms
 
 * **Base Algorithm——a neighbor of a neighbor is also likely to be a neighbor**
 
-  NN-Descent 的中心思想即通过类似梯度下降的局部搜索逐步优化近邻图。
+  NN-Descent 的中心思想即通过类似梯度下降的局部搜索方法逐步优化近邻图。
 
   > **Data**: dataset V, similarity oracle σ, K 
   >
@@ -43,46 +31,48 @@ mathjax: true
   >
   > begin 
   >
-  > ​	B[v] ← Sample(V,K) × {∞}, ∀v ∈ V                                  // 构造随机初始图
+  > 　　B[v] ← Sample(V,K) × {∞}, ∀v ∈ V                                  // 构造随机初始图
   >
-  > ​	loop 
+  > 　　loop 
   >
-  > ​		R ← Reverse(B)                                                             // 更新反向（入边）集
+  > 　　　　R ← Reverse(B)                                                         // 更新反向集（所有以 v 为终点的有向边的起点的集合）
   >
-  > ​		$\overline B$[v] ← B[v] ∪ R[v], ∀v ∈ V;                                       // 获取和 v 相连的点（无论出边入边）
+  > 　　　　$\overline B$[v] ← B[v] ∪ R[v], ∀v ∈ V;                                    // 获取和 v 存在连边的点
   >
-  > ​		c ← 0                                                                              // 初始化近邻更新次数标志 
+  > 　　　　c ← 0                                                                           // 初始化近邻更新次数标志
   >
-  > ​		for v ∈ V do 
+  > 　　　　for v ∈ V do 
   >
-  > ​			for $u_1$ ∈ $\overline B$[v], $u_2$ ∈ $\overline B$[$u_1$] do                               // 当前点与邻居的邻居进行比较
+  > 　　　　　for $u_1$ ∈ $\overline B$[v], $u_2$ ∈ $\overline B$[$u_1$] do                            // 当前点与邻居的邻居进行距离比较，并更新近邻
   >
-  > ​				l ← σ(v, $u_2$) 
+  > 　　　　　　l ← σ(v, $u_2$) 
   >
-  > ​				c ← c +UpdateNN(B[v], <$u_2$, l>)
+  > 　　　　　　c ← c +UpdateNN(B[v], <$u_2$, l>)
   >
-  > ​		return B if c = 0                                                             // 未进行更新操作，返回结果集
+  > 　　　　return B if c = 0                                                         // 没有可更新点，终止迭代操作
   >
   > 
   >
-  > function Reverse(B)                                                              // 计算反向近邻集
+  > function Reverse(B)                                                                 // 计算反向集
   >
   > begin 
   >
-  > ​	R[v] ← {u | <v, · · ·> ∈ B[u]} ∀v ∈ V 
+  > 　　R[v] ← {u | <v, · · ·> ∈ B[u]} ∀v ∈ V 
   >
   > return R
   >
   > 
   >
-  > function UpdateNN(H, <u, l, . . .>)    // return whether candidates have updated
+  > function UpdateNN(H, <u, l, . . .>)    							         // **return whether candidates have updated**
   >
   > Update K-NN heap H; return 1 if changed, or 0 if not.
 
 * **Local Join——let my neighbors acquaint each other**
 
-  基本算法通过 **当前点** 与 **所有邻居的邻居** 进行比较的方法更新当前点的结果集。
+  局部连接改进了基础算法的遍历方式。
 
+  > // 基础算法遍历方式
+  >
   > for v ∈ V do 
   >
   > ​	for $u_1$ ∈ $\overline B$[v], $u_2$ ∈ $\overline B$[$u_1$] do                               // 当前点与邻居的邻居进行比较
@@ -90,23 +80,29 @@ mathjax: true
   > ​		l ← σ(v, $u_2$) 
   >
   > ​		c ← c +UpdateNN(B[v], <$u_2$, l>)
-
-  **局部连接** 对近邻遍历访问的方法进行了改进，对当前点邻居集内每一对不同的邻居进行相似度计算和更新。
-
+  >
+  >  
+  >
+  > // 局部连接遍历方式
+  >
   > for v ∈ V do 
   >
-  > ​	for $u_1$, $u_2$ ∈ $\overline B$[v] do                                               // 当前点的邻居互相进行比较
+  > 　　for $u_1$, $u_2$ ∈ $\overline B$[v] do                                               // 当前点的邻居间进行相互比较
   >
-  > ​		l ← σ($u_1$, $u_2$) 
+  > 　　　　l ← σ($u_1$, $u_2$) 
   >
-  > ​		c ← c +UpdateNN(B[$u_1$], <$u_2$, l>)
+  > 　　　　c ← c +UpdateNN(B[$u_1$], <$u_2$, l>)
   >
-  > ​		c ← c +UpdateNN(B[$u_2$], <$u_1$, l>)
+  > 　　　　c ← c +UpdateNN(B[$u_2$], <$u_1$, l>)
 
-  举个栗子，如果每一个对象的邻居的个数平均为 K，基础算法迭代为  **a -> b -> c**，一次迭代每个对象将访问 $K^2$ 个点；而局部连接变为了 **b <- a -> c**，每次迭代只需要访问 K 个点。这样改进的好处主要有两点：
+  举个栗子，以下图为例，基本算法通过 **当前点 $a$ ** 与 **邻居的邻居 $c$ ** 进行比较的方法更新 $a$ 的近邻集；局部连接则是对 $a$ 近邻集内 **不同的邻居 $d$ 和 $b$** 进行相似度计算和更新。
 
-  * 单机部署情况下，运用 **Cache 访问的局部性原理** 提升了 Cache 命中率 
-  * 分布式部署时，能减少机器之间 **数据复制**
+  <img src="eg1.png" alt="eg1" style="zoom: 67%;" />
+
+  通过改进，局部连接减少了迭代时访问点的个数：如果每一个点平均有 $K$ 个邻居，基础算法每次迭代将访问 $K^2$ 个点；而局部连接每次迭代只需要访问 $K$ 个点。在实际应用中有两点好处：
+
+  * 单机部署情况下，运用 **Cache 访问的局部性原理** 提升了 Cache 命中率，提高了搜索构建效率
+  * 分布式部署时，能有效减少节点间 **数据复制** 带来的性能损耗
 
 * **Incremental Search——record neighbors' name**
 
@@ -120,7 +116,9 @@ mathjax: true
 
 * **Early Termination——done is better than perfect**
 
-  基础算法中，若某次迭代近邻图未更新则算法终止。然而，如下图所示，近邻搜索算法随着召回率逼近 100%，需要更多次迭代才能获得略微提升，考虑到召回率和搜索性能的取舍，这些迭代其实没必要执行。为了解决这个问题，本文采取的方案是：在每次迭代中，统计近邻图更新次数 count，当 count < δKN 时终止程序。其中 δ 是精度参数，它粗略反应了由于提前终止允许错过的真正的近邻的比例。
+  基础算法中，若某次迭代近邻图未更新则算法终止。然而，如下图所示，近邻搜索算法随着召回率逼近 100%，需要更多次迭代才能获得略微提升，考虑到召回率和搜索性能的取舍，这些迭代其实没必要执行。
+
+  为了解决这个问题，在每次迭代中，统计近邻图更新次数 count，当 count < δKN 时终止程序。其中 δ 是精度参数，它粗略反应了由于提前终止允许错过的真正的近邻的比例。
 
   <img src="glove.png" alt="glove" style="zoom: 33%;" />
 
@@ -132,56 +130,55 @@ mathjax: true
   >
   > begin 
   >
-  > ​	B[v] ← Sample(V,K) × {<∞, true>} ∀v ∈ V 
+  > 　　B[v] ← Sample(V,K) × {<∞, true>} ∀v ∈ V 
   >
-  > ​	loop 
+  > 　　loop 
   >
-  > ​		parallel for v ∈ V do       
+  > 　　　　parallel for v ∈ V do       
   >
-  > ​			// 根据是否访问过将候选池分为两部分
+  > 　　　　　　// 增量搜索，根据是否访问过将候选集分为两部分
   >
-  > ​			old[v] ← all items in B[v] with a false flag // 增量搜索
+  > 　　　　　　old[v] ← all items in B[v] with a false flag // 增量搜索
   >
-  > ​			new[v] ← ρK items in B[v] with a true flag  // 采样
+  > 　　　　　　new[v] ← ρK items in B[v] with a true flag  // 采样
   >
-  > ​			Mark sampled items in B[v] as false;
+  > 　　　　　　Mark sampled items in B[v] as false;
   >
-  > ​		old′ ← Reverse(old), new′ ← Reverse(new)                                        // 更新反向集
+  > 　　　　old′ ← Reverse(old), new′ ← Reverse(new)                                            // 更新反向集
   >
-  > ​		c ← 0 //update counter 
+  > 　　　　c ← 0 //update counter 
   >
-  > ​		parallel for v ∈ V do                                                                              // 混合候选集和反向集
+  > 　　　　parallel for v ∈ V do                                                                                  // 混合候选集和反向集
   >
-  > ​			old[v] ← old[v] ∪ Sample(old′[v], ρK)  
+  > 　　　　　　old[v] ← old[v] ∪ Sample(old′[v], ρK)  
   >
-  > ​			new[v] ← new[v] ∪ Sample(new′[v], ρK) 
+  > 　　　　　　new[v] ← new[v] ∪ Sample(new′[v], ρK) 
   >
-  > ​			for $u_1, u_2$ ∈ new[v], $u_1 < u_2$ or $u_1$ ∈ new[v], $u_2$ ∈ old[v] do   // 局部连接
+  > 　　　　　　for $u_1, u_2$ ∈ new[v], $u_1 < u_2$ or $u_1$ ∈ new[v], $u_2$ ∈ old[v] do   // 局部连接
   >
-  > ​				l ← σ($u_1, u_2$) 
+  > 　　　　　　　　l ← σ($u_1, u_2$) 
   >
-  > ​				// c and B[.] are synchronized.
+  > 　　　　　　　　// c and B[.] are synchronized.
   >
-  > ​				c ← c+UpdateNN(B[$u_1$], <u2, l, true>)
+  > 　　　　　　　　c ← c+UpdateNN(B[$u_1$], <u2, l, true>)
   >
-  > ​				c ← c+UpdateNN(B[$u_2$], <u1, l, true>)
+  > 　　　　　　　　c ← c+UpdateNN(B[$u_2$], <u1, l, true>)
   >
-  > ​	return B if c < δNK                                                                                        // 提前终止
+  > 　　return B if c < δNK                                                                                            // 提前终止
 
   
 
+# Conclusions
 
-### Conclusions
+* **优点**：时间复杂度较低, 在大多数数据集上为 O($n^{1.14}$), 且易于 **并行化** 实现。
 
-* 优点：时间复杂度较低, 在大多数数据集上为 O($n^{1.14}$), 且易于 **并行化** 实现。
-
-* 缺点：NN-Descent 在本征维度较高的数据集上表现较差，适用于本征维度较低的数据集。
+* **缺点**：在本征维度较高的数据集上表现较差。
 
   <img src="dim.png" alt="dim" style="zoom: 50%;" />
 
   
 
-### Appendix
+# Appendix
 
 * **理论推导**
 
@@ -193,20 +190,26 @@ mathjax: true
     * 每个点分布位置相互独立;
     * $K << |B_{r/2}(v)|$;
 
-    则即使从随机 $K$ 近邻图开始，通过探索每个点 $v$ 邻居的邻居  $B'[v]$ ，总可以找到 $v$ 的处于半径为 $r/2$ 范围内的 $K$ 近邻 $B_{r/2}(v)$；通过不断重复上述过程，每个点的邻居到该点的距离会不断收缩，最终，形成一个高质量近似 K-NNG。
+    则**即使从随机 $K$ 近邻图开始，通过探索每个点 $v$ 邻居的邻居  $B'[v]$ ，总可以找到 $v$ 的处于半径为 $r/2$ 范围内的 $K$ 近邻 $B_{r/2}(v)$；通过不断重复上述过程，每个点的邻居集到该点的距离会不断收缩，最终，形成一个高质量近似 K-NNG**。
 
   * 详细证明：
 
     * 若 $B_{r/2}(v)$ 中的一点 $u$，$B'[v]$ 中也包含，则至少需要存在一点 $v'$，使得 $v' \in B[v]$，且 $u \in B[v']$。接下来，只需找到满足上述条件的 $v'$（$v' \in B_{r/2}(v))$，其有以下三个不等式成立：
 
-      * $v' \in B_r(v), P\{v' \in B[v]\} \geq K/|B_r(v)|$。（若 $v$ 的 $K$ 个邻居都在 $B_r(v)$ 中，则共有 $C^K_{|B_r(v)|}$ 种情况，而 $B_r(v)$ 中一点不是 $v$ 的邻居的情况共有 $C^K_{|B_r(v)|-1}$ 种，因此 $B_r(v)$ 中一点不是 $v$ 的邻居的概率为 $C^K_{|B_r(v)|-1} / C^K_{|B_r(v)|}$ ， 而 $B_r(v)$ 中一点是 $v$ 的邻居的概率为 $1-C^K_{|B_r(v)|-1} / C^K_{|B_r(v)|}$，即 $K/B_r(v)$）;
+      * $v' \in B_r(v), P\{v' \in B[v]\} \geq K/|B_r(v)|$。
 
-      * $d(u,v') \leq d(u,v) + d(v,v') \leq r,P\{u \in B[v']\} \geq K/|B_r(v')|$。（由第一条不等式可知，$B_r(v')$ 中的一点是 $v'$ 的邻居的概率为 $K/|B_r(v')|$，由于 $u$ 和 $v'$ 的距离小于等于 $r$，因此 $u$ 是 $v'$ 的邻居的概率大于等于 $K/|B_r(v')|$）；
+        > 若 $v$ 的 $K$ 个邻居都在 $B_r(v)$ 中，则共有 $C^K_{|B_r(v)|}$ 种情况，而 $B_r(v)$ 中一点不是 $v$ 的邻居的情况共有 $C^K_{|B_r(v)|-1}$ 种，因此 $B_r(v)$ 中一点不是 $v$ 的邻居的概率为 $C^K_{|B_r(v)|-1} / C^K_{|B_r(v)|}$ ， 而 $B_r(v)$ 中一点是 $v$ 的邻居的概率为 $1-C^K_{|B_r(v)|-1} / C^K_{|B_r(v)|}$，即 $K/B_r(v)$;
 
-      * $|B_r(v) \leq c|B_{r/2}(v)|, |B_r(v') \leq c|B_{r/2}(v')| \leq c|B_r(v)| \leq c^2|B_{r/2}(v)|$。（由于 $v'$ 在 $v$ 的 $r/2$ 超球中，$v'$ 的 $r/2$ 超球一定包含于 $v$ 的 $r$ 超球中）。
+      * $d(u,v') \leq d(u,v) + d(v,v') \leq r,P\{u \in B[v']\} \geq K/|B_r(v')|$。
 
-      <img src="NN-Descent1.jpg" alt="NN-Descent1" style="zoom:15%;" />
+        > 由第一条不等式可知，$B_r(v')$ 中的一点是 $v'$ 的邻居的概率为 $K/|B_r(v')|$，由于 $u$ 和 $v'$ 的距离小于等于 $r$，因此 $u$ 是 $v'$ 的邻居的概率大于等于 $K/|B_r(v')|$；
 
+      * $|B_r(v) \leq c|B_{r/2}(v)|, |B_r(v') \leq c|B_{r/2}(v')| \leq c|B_r(v)| \leq c^2|B_{r/2}(v)|$。
+    
+        > 由于 $v'$ 在 $v$ 的 $r/2$ 超球中，$v'$ 的 $r/2$ 超球一定包含于 $v$ 的 $r$ 超球中。
+    
+      <img src="eg2.png" alt="eg2" style="zoom:67%;" />
+    
     * 由以上三个不等式可得：$P\{v'\in B[v] \land u \in B[v']\} \geq K/ |B_{r/2}(v)|^2$，因此，当 $v$ 的邻居从 $B_{r/2}(v)$ 中取时，在 $B_{r/2}(v)$ 中的一点 $u$ 属于 $v$ 的邻居的邻居的概率为：$P\{u\in B'[v]\} \geq 1- (1-K/|B_{r/2}(v)|^2)^{|B_{r/2}(v)} \approx K/|B_{r/2}(v)|$
 
 * **代码实现**
@@ -355,7 +358,23 @@ mathjax: true
 
 
 
-*参考*：
+***
+
+
+
+*Bibliography*：
+
+**Title**: [Efficient k-nearest neighbor graph construction for generic similarity measures.](https://doi.org/10.1145/1963405.1963487)
+
+**Affiliations**: *Princeton University*
+
+**Journal**: *WWW ' 2011*
+
+**Key Words**：*arbitrary similarity measure, iterative method, k-nearest neighbor graph, information storage and retrieval.*
+
+<br/>
+
+*References*：
 
 * [efanna_graph](https://github.com/ZJULearning/efanna_graph)
 * [KGraph: A Library for Approximate Nearest Neighbor Search](https://github.com/aaalgo/kgraph)
