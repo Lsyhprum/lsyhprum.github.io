@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-net.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-net.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="RNG," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Introduction该论文提出了一种 新图索引结构 MRNG 及其近似版本 NSG，该类结构具有如下四个优点：  确保图的连通性 降低平均出度 缩短搜索路径 减小索引尺寸">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NSG论文浅析">
+<meta property="og:url" content="http://example.com/2021/07/05/NSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/index.html">
+<meta property="og:site_name" content="Lsyhprum">
+<meta property="og:description" content="Introduction该论文提出了一种 新图索引结构 MRNG 及其近似版本 NSG，该类结构具有如下四个优点：  确保图的连通性 降低平均出度 缩短搜索路径 减小索引尺寸">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2021/07/05/NSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/MSNET.png">
+<meta property="og:image" content="http://example.com/2021/07/05/NSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/RNG%20vs%20MRNG.png">
+<meta property="article:published_time" content="2021-07-05T11:49:47.000Z">
+<meta property="article:modified_time" content="2021-07-07T09:36:36.570Z">
+<meta property="article:author" content="Lsyhprum">
+<meta property="article:tag" content="RNG">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/07/05/NSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/MSNET.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2021/07/05/NSG论文浅析/"/>
+
+
+
+
+
+  <title>NSG论文浅析 | Lsyhprum</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lsyhprum</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/05/NSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lsyhprum">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">NSG论文浅析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-07-05T19:49:47+08:00">
+                2021-07-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ANNS/" itemprop="url" rel="index">
+                    <span itemprop="name">ANNS</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ANNS/GRAPH-BASED/" itemprop="url" rel="index">
+                    <span itemprop="name">GRAPH-BASED</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>该论文提出了一种 <strong>新图索引结构 MRNG 及其近似版本 NSG</strong>，该类结构具有如下四个优点：</p>
+<ul>
+<li>确保图的连通性</li>
+<li>降低平均出度</li>
+<li>缩短搜索路径</li>
+<li>减小索引尺寸</li>
+</ul>
+<span id="more"></span>
+<h1 id="Monotonic-Search-Networks"><a href="#Monotonic-Search-Networks" class="headerlink" title="Monotonic Search Networks"></a>Monotonic Search Networks</h1><ul>
+<li><p><strong>Monotonic Path</strong></p>
+<p>在给定空间 $E^d$ 的有限点集 $S$ 中，$p$、$q$ 为点集合中任意两点，$G$ 为定义由 $S$ 中所有点构成的图。$ v1,v2…vk(v1=p,vk=q)$ 为从点 $p$ 到 $q$ 路径上依次经过的点，若 $∀i = 1,…,k−1,δ(v_i,q) &gt; δ(v_{i+1},q)$ 则该路径可以视为单调路径。</p>
+</li>
+<li><p><strong>Monotonic Search Network</strong></p>
+<p>若由 $S$ 构成的图 $G$ 中，任意两点 $p$、$q$ 之间至少存在一条单调路径，则 $G$ 为单调搜索网络。</p>
+<p><img src="/2021/07/05/NSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/MSNET.png" alt="MSNET" style="zoom:67%;"></p>
+<p>MSNET 具有如下几个性质：</p>
+<ul>
+<li>贪婪搜索可以不使用回溯找到 $G$ 中任意两点之间的单调路径</li>
+<li>期望路径长度</li>
+</ul>
+</li>
+</ul>
+<h1 id="Proximity-Graphs"><a href="#Proximity-Graphs" class="headerlink" title="Proximity Graphs"></a>Proximity Graphs</h1><ul>
+<li><p><strong>Delaunay Graphs</strong></p>
+<ul>
+<li>优点：单调搜索网络</li>
+<li>缺点：构建时间复杂度高，搜索效率低</li>
+<li>Other:<ul>
+<li>KNN 图是 DG 图的近似</li>
+<li>GNNS，EFANNA，IEH，DPG</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Relative Neighborhood Graphs</strong></p>
+<ul>
+<li>优点：通过三角形选边策略降低平均出度</li>
+<li>缺点：不满足单调搜索网络</li>
+<li>Other<ul>
+<li>FANNG，HNSW</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Navigable Small-World Networks</strong> </p>
+<ul>
+<li>缺点：图的平均度数高；不保证图连通</li>
+<li>Other<ul>
+<li>NSW，HNSW</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Randomized Neighborhood Graphs</strong></p>
+<ul>
+<li>缺点：构建时间复杂度高 O($log^3n$)</li>
+</ul>
+</li>
+</ul>
+<h1 id="Algorithms"><a href="#Algorithms" class="headerlink" title="Algorithms"></a>Algorithms</h1><ul>
+<li><p><strong>MRNG</strong></p>
+<p>为了降低图的平均出度，HNSW 和 FANNG 使用 RNG 使图变得稀疏，但 RNG 没有足够的边支撑其满足 MSNET 的性质，举个栗子，下图 a 为使用 RNG 裁边的示例，在 p 和 q 之间不存在单调路径。</p>
+<p><img src="/2021/07/05/NSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/RNG vs MRNG.png" alt="RNG vs MRNG" style="zoom:80%;"></p>
+<p>MRNG 试图通过一种新的边选择策略使得 RNG 满足单调搜索网络的性质。在给定空间 $E^d$ 的有限点集 $S$ 中，MRNG 中的有向边满足如下性质：任意两点 $p$、$q$ 所组成的月牙形区域 $lune_{pq} = B(p,\sigma(p,q)) \and B(q,\sigma(p,q))$ 不包含 $S$ 中的任何点，或存在一点 $r$ 位于月牙形区域 $lune_{pq}$，但 $\overrightarrow{pr} \notin MRNG$。</p>
+<p>MRNG 的选边策略和 RNG 区别在于，对于任何边 $pq \in MRNG，lune_{pq} \cap S$ 不一定为空。</p>
+</li>
+<li><p><strong>NSG</strong></p>
+<p>虽然 MRNG 可以保证快速的搜索时间， 但其构建索引时间较高。因此该论文提出了 MRNG 的近似图——NSG：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">Require: kNN Graph G, candidate pool size l <span class="keyword">for</span> greedy search,</span><br><span class="line">max-out-degree m.</span><br><span class="line">Ensure: NSG with navigating node n</span><br><span class="line">calculate the centroid c of the dataset.</span><br><span class="line">r =random node.</span><br><span class="line">n =Search-on-<span class="built_in">Graph</span>(G,r,c,l)%navigating node</span><br><span class="line"><span class="keyword">for</span> all node v in G <span class="keyword">do</span></span><br><span class="line">	Search-on-<span class="built_in">Graph</span>(G,n,v,l)</span><br><span class="line">	E =all the nodes checked along the search</span><br><span class="line">	add v’s nearest neighbors in G to E</span><br><span class="line">	sort E in the ascending order of the distance to v.</span><br><span class="line">	result set R = ∅, p0= the closest node to v in E</span><br><span class="line">	R.<span class="built_in">add</span>(p0)</span><br><span class="line">	<span class="keyword">while</span> !E.<span class="built_in">empty</span>() &amp;&amp; R.<span class="built_in">size</span>() &lt; m <span class="keyword">do</span></span><br><span class="line">        p = E.<span class="built_in">front</span>()</span><br><span class="line">		E.<span class="built_in">remove</span>(E.<span class="built_in">front</span>())</span><br><span class="line">		<span class="keyword">for</span> all node r in R <span class="keyword">do</span></span><br><span class="line">			<span class="keyword">if</span> edge pv conflicts with edge pr then</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			end <span class="keyword">if</span></span><br><span class="line">		end <span class="keyword">for</span></span><br><span class="line">		<span class="keyword">if</span> no conflicts occurs then</span><br><span class="line">			R.<span class="built_in">add</span>(p)</span><br><span class="line">		end <span class="keyword">if</span></span><br><span class="line">	end <span class="keyword">while</span></span><br><span class="line">end <span class="keyword">for</span></span><br><span class="line"><span class="keyword">while</span> True <span class="keyword">do</span></span><br><span class="line">	build a tree with edges in NSG from root n with DFS.</span><br><span class="line">	<span class="keyword">if</span> <span class="keyword">not</span> all nodes linked to the tree then</span><br><span class="line">		add an edge between one of the out-of-tree nodes <span class="keyword">and</span></span><br><span class="line">		its closest in-tree <span class="built_in">neighbor</span> (by algorithm <span class="number">1</span>).</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		<span class="keyword">break</span>.</span><br><span class="line">	end <span class="keyword">if</span></span><br><span class="line">end <span class="keyword">while</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<p><em>Bibliography</em>：</p>
+<p><strong>Title</strong>: <a target="_blank" rel="noopener" href="https://doi.org/10.14778/3303753.3303754">Fast Approximate Nearest Neighbor Search With The Navigating Spreading-out Graph.</a></p>
+<p><strong>Affiliations</strong>: <em>Zhejiang University</em></p>
+<p><strong>Journal</strong>: <em>VLDB’2019</em></p>
+<p><br></p>
+<p><em>References</em>：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/ZJULearning/nsg">NSG : Navigating Spread-out Graph For Approximate Nearest Neighbor Search</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/RNG/" rel="tag"># RNG</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/07/03/FANNG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" rel="next" title="FANNG论文浅析">
+                <i class="fa fa-chevron-left"></i> FANNG论文浅析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/07/07/NSSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" rel="prev" title="NSSG论文浅析">
+                NSSG论文浅析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Monotonic-Search-Networks"><span class="nav-number">2.</span> <span class="nav-text">Monotonic Search Networks</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Proximity-Graphs"><span class="nav-number">3.</span> <span class="nav-text">Proximity Graphs</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Algorithms"><span class="nav-number">4.</span> <span class="nav-text">Algorithms</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lsyhprum</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
