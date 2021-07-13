@@ -1,5 +1,5 @@
 ---
-title: NSG浅析
+title: NSG论文浅析
 date: 2021-07-05 19:49:47
 tags:
 - RNG
