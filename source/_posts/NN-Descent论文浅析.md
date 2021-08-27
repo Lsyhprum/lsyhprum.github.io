@@ -10,20 +10,21 @@ mathjax: true
 
 # Introduction
 
-本文针对 **K-近邻图算法（K-NNG）构建算法** 存在的两个主要问题：
+本文针对 **K-近邻图（K-NNG）构建算法** 存在的几个主要问题：
 
 * 需要全局索引信息，算法无法并行执行，因此**不适合大规模数据**
 * **只适用于特定度量方法**
+* 构建时较高的**时间复杂度**
 
-提出了一种基于局部搜索的K-近邻图（K-NNG）构建算法，**NN-Descent**。该算法可用于大规模数据，并支持分布式计算环境，同时适用于任意的度量方法。
+提出了一种基于局部搜索的 K-NNG 构建算法——**NN-Descent**。该算法支持分布式计算环境，可用于大规模数据，并且适用于任意的度量方法。
 
 <!--more-->
 
-# Algorithms
+# NN-Descent
 
 * **Base Algorithm——a neighbor of a neighbor is also likely to be a neighbor**
 
-  NN-Descent 的中心思想即通过类似梯度下降的局部搜索方法逐步优化近邻图。
+  NN-Descent 的中心思想即通过类似梯度下降的局部搜索方法迭代地优化近邻图。
 
   > **Data**: dataset V, similarity oracle σ, K 
   >
@@ -35,15 +36,15 @@ mathjax: true
   >
   > 　　loop 
   >
-  > 　　　　R ← Reverse(B)                                                         // 更新反向集（所有以 v 为终点的有向边的起点的集合）
+  > 　　　　R ← Reverse(B)                                                         // 更新反向集（以 v 为终点的起点集合）
   >
-  > 　　　　$\overline B$[v] ← B[v] ∪ R[v], ∀v ∈ V;                                    // 获取和 v 存在连边的点
+  > 　　　　$\overline B$[v] ← B[v] ∪ R[v], ∀v ∈ V;                                    // 获取和 v 存在连边的点集
   >
-  > 　　　　c ← 0                                                                           // 初始化近邻更新次数标志
+  > 　　　　c ← 0                                                                           // 初始化近邻更新次数
   >
   > 　　　　for v ∈ V do 
   >
-  > 　　　　　for $u_1$ ∈ $\overline B$[v], $u_2$ ∈ $\overline B$[$u_1$] do                            // 当前点与邻居的邻居进行距离比较，并更新近邻
+  > 　　　　　for $u_1$ ∈ $\overline B$[v], $u_2$ ∈ $\overline B$[$u_1$] do                            // 当前点 v 与邻居的邻居进行距离比较，并更新 v 的近邻集
   >
   > 　　　　　　l ← σ(v, $u_2$) 
   >
@@ -63,7 +64,7 @@ mathjax: true
   >
   > 
   >
-  > function UpdateNN(H, <u, l, . . .>)    							         // **return whether candidates have updated**
+  > function UpdateNN(H, <u, l, . . .>)    							         // 返回候选集是否更新
   >
   > Update K-NN heap H; return 1 if changed, or 0 if not.
 
@@ -95,20 +96,20 @@ mathjax: true
   >
   > 　　　　c ← c +UpdateNN(B[$u_2$], <$u_1$, l>)
 
-  举个栗子，以下图为例，基本算法通过 **当前点 $a$ ** 与 **邻居的邻居 $c$ ** 进行比较的方法更新 $a$ 的近邻集；局部连接则是对 $a$ 近邻集内 **不同的邻居 $d$ 和 $b$** 进行相似度计算和更新。
+  举个栗子，以下图为例，基本算法通过 **当前点 $a$ ** 与 **邻居的邻居 $c$ ** 进行比较的方法更新 $a$ 的近邻集；局部连接则是对 $a$ 近邻集内 **不同的邻居 $d$ 和 $b$** 进行相似度计算和更新，类似的，a 和 c 将作为 b 的邻居相互比较。
 
   <img src="eg1.png" alt="eg1" style="zoom: 67%;" />
 
   通过改进，局部连接减少了迭代时访问点的个数：如果每一个点平均有 $K$ 个邻居，基础算法每次迭代将访问 $K^2$ 个点；而局部连接每次迭代只需要访问 $K$ 个点。在实际应用中有两点好处：
 
-  * 单机部署情况下，运用 **Cache 访问的局部性原理** 提升了 Cache 命中率，提高了搜索构建效率
+  * 单机部署情况下，运用 **Cache 访问的局部性原理** 提高了命中率，优化了构建效率
   * 分布式部署时，能有效减少节点间 **数据复制** 带来的性能损耗
 
 * **Incremental Search——record neighbors' name**
 
   基础算法中存在大量的冗余计算，在 ANNS 中距离计算是耗费时间的主要原因，应尽量减少。
 
-  **增量搜索** 通过在近邻数据结构中增加访问标记，减少重复计算。新近邻标记初始化为 true，在参与过至少一轮局部连接过程后，标记为 false。在局部连接过程中，两个近邻只有存在至少一个未访问才进行距离计算。
+  **增量搜索** 通过在近邻数据结构中 **增加访问标记**，减少重复计算。具体而言，新近邻标记初始化为 true，在参与过至少一轮局部连接过程后，标记为 false。在局部连接过程中，两个近邻只有存在至少一个未访问才进行距离计算。
 
 * **Sampling——old friends and new friends**
 
@@ -116,11 +117,11 @@ mathjax: true
 
 * **Early Termination——done is better than perfect**
 
-  基础算法中，若某次迭代近邻图未更新则算法终止。然而，如下图所示，近邻搜索算法随着召回率逼近 100%，需要更多次迭代才能获得略微提升，考虑到召回率和搜索性能的取舍，这些迭代其实没必要执行。
-
-  为了解决这个问题，在每次迭代中，统计近邻图更新次数 count，当 count < δKN 时终止程序。其中 δ 是精度参数，它粗略反应了由于提前终止允许错过的真正的近邻的比例。
+  基础算法中，若某次迭代近邻图未更新则算法终止。然而，如下图所示，近邻搜索算法随着召回率逼近 100%，需要更多次迭代才能获得略微提升，考虑到召回率和搜索性能的取舍，这些后续的提升效果很小的迭代并没有执行的必要。
 
   <img src="glove.png" alt="glove" style="zoom: 33%;" />
+
+  为了解决这个问题，在每次迭代中，统计近邻图更新次数 count，当 count < δKN 时终止程序。其中 δ 是精度参数，它粗略反应了由于提前终止允许错过的真正的近邻的比例。
 
 * **Full Algorithm**
 
@@ -160,23 +161,56 @@ mathjax: true
   >
   > 　　　　　　　　// c and B[.] are synchronized.
   >
-  > 　　　　　　　　c ← c+UpdateNN(B[$u_1$], <u2, l, true>)
+  > 　　　　　　　　c ← c+UpdateNN(B[$u_1$], < u2, l, true >)
   >
-  > 　　　　　　　　c ← c+UpdateNN(B[$u_2$], <u1, l, true>)
+  > 　　　　　　　　c ← c+UpdateNN(B[$u_2$], < u1, l, true >)
   >
-  > 　　return B if c < δNK                                                                                            // 提前终止
+  > 　　return B if c < δNK                                                                                              // 提前终止
 
-  
 
-# Conclusions
 
-* **优点**：时间复杂度较低, 在大多数数据集上为 O($n^{1.14}$), 且易于 **并行化** 实现。
 
-* **缺点**：在本征维度较高的数据集上表现较差。
+# NN-Descent on High-Dimensional Data
 
-  <img src="dim.png" alt="dim" style="zoom: 50%;" />
+**高维诅咒** 对各种机器学习方法和任务带来了严重挑战，其主要体现在两方面：
 
-  
+* **Distance concentration**
+
+  高维数据中所有点对间的距离趋于相等；
+
+* **Hubness**
+
+  该性质与最近邻有关，具体表现在，维度会影响 **k-occurrences（一个点在数据集中其他点的k-近邻中出现的次数）** 的分布。随着维度的升高，将会出现 **hubs（具有非常高的 k-occurrences 的点）**。
+
+  举个栗子~
+
+  令 $N_k=n$ 表示为某点被算入 k 近邻的次数为 $n$，$p(N_k=n)$ 表示为 $N_k=n$ 的点占全部数据的比例。
+
+  <img src="emp.png" alt="dim" style="zoom: 33%;" />
+
+  由上图可以看出，随着维度的增加，出现明显的 **zipf 效应**。k-occurrences 很小的点数量变多；k-occurrences 很大的点数量变少，但 k-occurrences 的程度越来越大。
+
+  ~~随着████, 富人越来越富, 但是数量变少；而穷人还是一样的穷，且数量增多。~~
+
+NN-Descent 虽然实现了较低的构建时间复杂度，在大多数数据集上为 O($n^{1.14}$)，且易于并行。然而，该算法在本征维度较高的数据集上表现较差。
+
+<img src="dim.png" alt="dim" style="zoom: 50%;" />
+
+[NN-Descent on High-Dimensional Data](https://dl.acm.org/doi/pdf/10.1145/3227609.3227643) 认为高维数据下 K-NNG 的 **Hubness** 现象主要从以下两方面影响 NN-Descent 的性能：
+
+* 由于 NN-Descent 每次迭代根据候选集和反向集进行优化，因此，越多次出现在其他点候选集和反向集的点更新次数越多。Hubness 较低的点出现在其他点的候选集中的概率很低，它将仅作为其他点反向集（质量较低）中的点出现并被更新。
+
+  <img src="hit.png" alt="hit" style="zoom: 33%;" />
+
+* 低 Hubness 点命中偏差较大，一些具有低 Hubness 点具有高命中，而其他低 Hubness 点可能具有非常低的命中。
+
+  <img src="hit2.png" alt="hit2" style="zoom: 40%;" />
+
+  由于 NN-Descent 初始图为随机 K-NNG，如果某点位于初始随机图中的高质量邻域中，则更可能产生高命中数。否则，该点将很快从其他点候选集中删除，并被困在不是其真实邻居的点的反向集中，导致该点更新的概率相对较低。
+
+该论文针对 Hubness 现象对 NN-Descent 进行优化，提高了召回率，但增加了构建时间。究其本质，该算法是 **通过非均匀候选选择策略** 以实现更好的性能。
+
+
 
 # Appendix
 
@@ -379,4 +413,5 @@ mathjax: true
 * [efanna_graph](https://github.com/ZJULearning/efanna_graph)
 * [KGraph: A Library for Approximate Nearest Neighbor Search](https://github.com/aaalgo/kgraph)
 * [NN-Descent构建K近邻图——论文超详细注解](https://blog.csdn.net/whenever5225/article/details/105598694)
+* [[论文笔记] Hubs in Space](https://zhuanlan.zhihu.com/p/50697030)
 
