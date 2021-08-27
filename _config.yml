@@ -106,5 +106,6 @@ theme: hexo-theme-next
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: https://github.com/Lsyhprum/lsyhprum.github.io #https://bitbucket.org/JohnSmith/johnsmith.bitbucket.io
+  repo: https://Travis@github.com/Lsyhprum/lsyhprum.github.io.git
+  #repo: https://github.com/Lsyhprum/lsyhprum.github.io #https://bitbucket.org/JohnSmith/johnsmith.bitbucket.io
   branch: gh-pages
