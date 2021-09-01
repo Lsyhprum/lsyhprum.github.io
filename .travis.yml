@@ -1,34 +1,20 @@
 language: node_js   #指定使用的语言
-node_js:
-    - "8"
+node_js: 16
+script:
+  - "npm run build"
 cache:              # 指定缓存模块，可选。缓存可加快编译速度。
   directories:
     - node_modules
-    
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GH_TOKEN
+  keep-history: true
+  repo: Lsyhprum/lsyhprum.github.io
+  on:
+    branch: source
+  local-dir: public
+
 branches:
   only:
     - source        #触发持续集成的分支
-
-before_install:
-#    - export TZ='Asia/Shanghai' # 更改时区  
-    - npm install -g hexo-cli    
-
-install:            # Start: Build Lifecycle
-  - npm install
-  - npm install hexo-deployer-git --save
-
-script:             # 执行清缓存，生成网页操作
-  - hexo clean
-  - hexo generate
-
-after_script:       # 设置git提交名，邮箱
-#  - git init
-  - git config user.name "Lsyhprum"
-  - git config user.email "Murphy5L@outlook.com"
-  #将.config.yml中的文字`Travis`替换为环境变量中的{Travis}代表的那串密码
-  - sed -i "s/Travis/${Travis}/g" ./_config.yml  
-  - hexo deploy
-
-
-
-
