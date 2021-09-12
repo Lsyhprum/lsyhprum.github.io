@@ -14,7 +14,7 @@ mathjax: true
 
 * 需要全局索引信息，**不适合大规模数据**
 * **只适用于特定度量方法**
-* 构建时较高的**时间复杂度**
+* 构建时**较高的时间复杂度**
 
 提出了一种基于 **局部搜索** 的 K-NNG 构建算法——**NN-Descent**。该算法可用于大规模数据、适用于任意的度量方法且构建时间复杂度降低至 O($n^{1.14}$)。
 
@@ -117,9 +117,7 @@ mathjax: true
 
 * **Early Termination——done is better than perfect**
 
-  基础算法中，若某次迭代近邻图未更新则算法终止。然而，如下图所示，近邻搜索算法随着召回率逼近 100%，需要更多次迭代才能获得略微提升，考虑到召回率和搜索性能的取舍，这些后续的提升效果很小的迭代并没有执行的必要。
-
-  <img src="glove.png" alt="glove" style="zoom: 33%;" />
+  基础算法中，若某次迭代近邻图未更新则算法终止。然而，近邻搜索算法随着召回率逼近 100%，需要更多次迭代才能获得略微提升，一般考虑到召回率和搜索性能的取舍，这些后续的提升效果很小的迭代并没有执行的必要。
 
   为了解决这个问题，在每次迭代中，统计近邻图更新次数 count，当 count < δKN 时终止程序。其中 δ 是精度参数，它粗略反应了由于提前终止允许错过的真正的近邻的比例。
 
@@ -186,7 +184,7 @@ mathjax: true
 
   令 $N_k=n$ 表示为某点被算入 k 近邻的次数为 $n$，$p(N_k=n)$ 表示为 $N_k=n$ 的点占全部数据的比例。
 
-  <img src="emp.png" alt="dim" style="zoom: 33%;" />
+  <img src="emp.png" alt="dim" style="zoom: 50%;" />
 
   由上图可以看出，随着维度的增加，出现明显的 **zipf 效应**。k-occurrences 很小的点数量变多；k-occurrences 很大的点数量变少，但 k-occurrences 的程度越来越大。
 
@@ -194,7 +192,7 @@ mathjax: true
 
 NN-Descent 虽然实现了较低的构建时间复杂度，在大多数数据集上为 O($n^{1.14}$)，且易于并行。然而，该算法在本征维度较高的数据集上表现较差。
 
-<img src="dim.png" alt="dim" style="zoom: 50%;" />
+<img src="dim.png" alt="dim" style="zoom: 100%;" />
 
 [NN-Descent on High-Dimensional Data](https://dl.acm.org/doi/pdf/10.1145/3227609.3227643) 认为高维数据下 K-NNG 的 **Hubness** 现象主要从以下两方面影响 NN-Descent 的性能：
 
@@ -216,7 +214,7 @@ NN-Descent 虽然实现了较低的构建时间复杂度，在大多数数据集
 
 * **理论推导**
 
-  * 假设数据集 $V$ 半径为  $r$，数据集 $V$ 中各点 $v$ 在 $K$ 近邻图$（K=c^3）$中的 $K$ 近邻集合表示为 $B_K(v)$， $v$ 邻居的邻居的集合表示为 $B'[v]=\cup _{v'\in B[v]} B[v']$；
+  * 假设数据集 $V$ 半径为  $r$，数据集 $V$ 中各点 $v$ 在 $K$ 近邻图$（K=c^3）$中的 $K$ 近邻集合由 $B_K(v)$ 表示， $v$ 邻居的邻居的集合表示为 $B'[v]=\cup_{v'\in B[v]} B[v']$；
 
   * 只要近邻数量 $K$ 足够多，且满足如下三个条件：
 
@@ -228,7 +226,7 @@ NN-Descent 虽然实现了较低的构建时间复杂度，在大多数数据集
 
   * 详细证明：
 
-    * 若 $B_{r/2}(v)$ 中的一点 $u$，$B'[v]$ 中也包含，则至少需要存在一点 $v'$，使得 $v' \in B[v]$，且 $u \in B[v']$。接下来，只需找到满足上述条件的 $v'$（$v' \in B_{r/2}(v))$，其有以下三个不等式成立：
+    * 若 $B_{r/2}(v) $ 中的一点 $u$，$B'[v]$ 中也包含，则至少需要存在一点 $v'$，使得 $v' \in B[v]$，且 $u \in B[v']$。接下来，只需找到满足上述条件的 $v'$（$v' \in B_{r/2}(v))$，其有以下三个不等式成立：
 
       * $v' \in B_r(v), P\{v' \in B[v]\} \geq K/|B_r(v)|$。
 
@@ -239,11 +237,11 @@ NN-Descent 虽然实现了较低的构建时间复杂度，在大多数数据集
         > 由第一条不等式可知，$B_r(v')$ 中的一点是 $v'$ 的邻居的概率为 $K/|B_r(v')|$，由于 $u$ 和 $v'$ 的距离小于等于 $r$，因此 $u$ 是 $v'$ 的邻居的概率大于等于 $K/|B_r(v')|$；
 
       * $|B_r(v) \leq c|B_{r/2}(v)|, |B_r(v') \leq c|B_{r/2}(v')| \leq c|B_r(v)| \leq c^2|B_{r/2}(v)|$。
-    
+
         > 由于 $v'$ 在 $v$ 的 $r/2$ 超球中，$v'$ 的 $r/2$ 超球一定包含于 $v$ 的 $r$ 超球中。
-    
+
       <img src="eg2.png" alt="eg2" style="zoom:67%;" />
-    
+
     * 由以上三个不等式可得：$P\{v'\in B[v] \land u \in B[v']\} \geq K/ |B_{r/2}(v)|^2$，因此，当 $v$ 的邻居从 $B_{r/2}(v)$ 中取时，在 $B_{r/2}(v)$ 中的一点 $u$ 属于 $v$ 的邻居的邻居的概率为：$P\{u\in B'[v]\} \geq 1- (1-K/|B_{r/2}(v)|^2)^{|B_{r/2}(v)} \approx K/|B_{r/2}(v)|$
 
 * **代码实现**
@@ -402,7 +400,7 @@ NN-Descent 虽然实现了较低的构建时间复杂度，在大多数数据集
 
 **Affiliations**: *Princeton University*
 
-**Journal**: *WWW ' 2011*
+**Journal**: *WWW'2011*
 
 **Key Words**：*arbitrary similarity measure, iterative method, k-nearest neighbor graph, information storage and retrieval.*
 

@@ -76,3 +76,17 @@ ANNS 的误差主要由两方面引起：
 * **Product codebook**
 
   随着码本大小的增加，性能饱和（**理论描述**），难以继续提升。因此文中采用了类似 PQ 的方法，学习乘积回归码本。
+
+
+
+***
+
+
+
+*Bibliography*：
+
+**Title**: [Link and code: Fast indexing with graphs and compact regression codes.](https://openaccess.thecvf.com/content_cvpr_2018/papers/Douze_Link_and_Code_CVPR_2018_paper.pdf)
+
+**Affiliations**: *Facebook AI Research, Inria*
+
+**Journal**: *CVPR ' 2018*
