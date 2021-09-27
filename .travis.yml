@@ -1,10 +1,17 @@
 language: node_js   #指定使用的语言
 node_js: 16
+before_script:
+  - wget https://github.com/jgm/pandoc/releases/download/2.7/pandoc-2.7-1-amd64.deb
+  - dpkg -i ./pandoc-2.7-1-amd64.deb
 script:
   - "npm run build"
-addons: 
-    apt_packages: 
-    - pandoc 
+  - npm install hexo-cli -g
+  - npm install
+  - npm uninstall hexo-renderer-marked --save
+  - npm install hexo-renderer-pandoc --save
+  - hexo clean
+  - hexo g
+  - hexo deploy
 cache:              # 指定缓存模块，可选。缓存可加快编译速度。
   directories:
     - node_modules
