@@ -10,16 +10,19 @@ mathjax: true
 
 # Introduction
 
-该论文提出了一种 **新图索引结构 MRNG 及其近似版本 NSG**，该类结构具有如下四个优点：
+该论文提出一种新的理论图索引结构 **MRNG**，具有如下优点：
 
-* 确保图的连通性
-* 降低平均出度
-* 缩短搜索路径
-* 减小索引尺寸
+* 通过裁边算法降低了平均出度，降低了 **内存占用**；
+
+* 确保图的连通性，缩短了搜索路径，提高了 **搜索效率**；
+
+并在 MRNG 的基础上设计了实际应用的近似版本 **NSG**，进一步降低了索引构建复杂度。
 
 <!--more-->
 
-# Monotonic Search Networks
+# PRELIMINARIES
+
+## Monotonic Search Networks
 
 * **Monotonic Path**
 
@@ -31,51 +34,35 @@ mathjax: true
 
   <img src="MSNET.png" alt="MSNET" style="zoom:67%;" />
 
-  MSNET 具有如下几个性质：
+  在 **单调搜索网络中每个点** 都可以从任意起始点开始通过贪婪算法找到（数据库内查询）。
 
-  * 贪婪搜索可以不使用回溯找到 $G$ 中任意两点之间的单调路径
-  * 期望路径长度
-
-
-
-# Proximity Graphs
-
-* **Delaunay Graphs**
-
-  * 优点：单调搜索网络
-  * 缺点：构建时间复杂度高，搜索效率低
-  * Other:
-    * KNN 图是 DG 图的近似
-    * GNNS，EFANNA，IEH，DPG
-
-* **Relative Neighborhood Graphs**
-
-  * 优点：通过三角形选边策略降低平均出度
-  * 缺点：不满足单调搜索网络
-  * Other
-    * FANNG，HNSW
-
-* **Navigable Small-World Networks** 
-
-  * 缺点：图的平均度数高；不保证图连通
-  * Other
-    * NSW，HNSW
-
-* **Randomized Neighborhood Graphs**
-
-  * 缺点：构建时间复杂度高 O($log^3n$)
-
-
+  ```cpp
+  Require: graph G, start node p, query point q, candidate pool size l
+  Ensure: knearest neighbors of q
+  i=0, candidate poolS=∅
+  S.add(p)
+  while i < l do
+  	i=the index of the first unchecked node in S
+  	mark pi as checked
+  	for all neighbor n of pi in G do
+  		S.add(n)
+  	end for
+  	sort S in ascending order of the distance to q
+  	If S.size()> l,S.resize(l)
+  end while
+  return the first k nodes in S
+  ```
+  
 
 # Algorithms
 
 * **MRNG**
 
-  为了降低图的平均出度，HNSW 和 FANNG 使用 RNG 使图变得稀疏，但 RNG 没有足够的边支撑其满足 MSNET 的性质，举个栗子，下图 a 为使用 RNG 裁边的示例，在 p 和 q 之间不存在单调路径。
+  为了降低图的平均出度，[HNSW](https://arxiv.org/ftp/arxiv/papers/1603/1603.09320.pdf) 和 [FANNG](https://doi.org/10.1109/CVPR.2016.616) 使用 RNG 使图变得稀疏，但 RNG 没有足够的边支撑其满足 MSNET 的性质，举个栗子，下图 a 使用 RNG 裁边，q 到 p 存在单调路径，而 p 到 q 不存在单调路径。
 
-  <img src="RNG vs MRNG.png" alt="RNG vs MRNG" style="zoom:80%;" />
+  <img src="RNG vs MRNG.png" alt="RNG vs MRNG" style="zoom:100%;" />
 
-  MRNG 试图通过一种新的边选择策略使得 RNG 满足单调搜索网络的性质。在给定空间 $E^d$ 的有限点集 $S$ 中，MRNG 中的有向边满足如下性质：任意两点 $p$、$q$ 所组成的月牙形区域 $lune_{pq} = B(p,\sigma(p,q)) \and B(q,\sigma(p,q))$ 不包含 $S$ 中的任何点，或存在一点 $r$ 位于月牙形区域 $lune_{pq}$，但 $\overrightarrow{pr} \notin MRNG$。
+  MRNG 试图通过一种新的边选择策略使得 RNG 满足单调搜索网络的性质。在给定空间 $E^d$ 的有限点集 $S$ 中，MRNG 中的有向边满足如下性质：任意两点 $p$、$q$ 所组成的月牙形区域 $lune_{pq} = B(p,\sigma(p,q)) \cap B(q,\sigma(p,q))$ 不包含 $S$ 中的任何点，或存在一点 $r$ 位于月牙形区域 $lune_{pq}$，但 $\overrightarrow{pr} \notin MRNG$。
 
   MRNG 的选边策略和 RNG 区别在于，对于任何边 $pq \in MRNG，lune_{pq} \cap S$ 不一定为空。
 

@@ -8,28 +8,16 @@ tags:
 mathjax: true
 ---
 
-### Introduction
+# Introduction
 
 该论文提出了一种 **有向图结构**，该结构具有两个优点：
 
-* 最小化回溯成本
+* 最小化与树结构相关的回溯成本
 * 更好的利用本征维度信息，提升了算法效率
-
-
-
-<br/>
 
 <!--more-->
 
-**Title**: [FANNG: Fast Approximate Nearest Neighbour Graphs.](https://doi.org/10.1109/CVPR.2016.616)
-
-**Affiliations**: *Monash University*
-
-**Journal**: *CVPR'2016*
-
-
-
-### Algorithms
+# Algorithms
 
 * **Ideal graph structure**
 
@@ -134,3 +122,17 @@ mathjax: true
   * 基于初始图中的候选集，使用基础算法构建质量更高的图
 
   * 选择最接近数据质心的点作为入口点
+
+
+
+
+
+***
+
+*Bibliography*：
+
+**Title**:  [FANNG: Fast Approximate Nearest Neighbour Graphs.](https://doi.org/10.1109/CVPR.2016.616)
+
+**Affiliations**: *Monash University*
+
+**Journal**: *CVPR'2016*
