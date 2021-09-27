@@ -2,9 +2,9 @@ language: node_js   #指定使用的语言
 node_js: 16
 script:
   - "npm run build"
-install: 
-  - cabal update 
-  - cabal install pandoc 
+addons: 
+    apt_packages: 
+    - pandoc 
 cache:              # 指定缓存模块，可选。缓存可加快编译速度。
   directories:
     - node_modules
