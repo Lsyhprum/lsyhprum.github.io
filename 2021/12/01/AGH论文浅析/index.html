@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lsyhprum.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Introduction 现实世界的数据大多可以用低维流形表示，具体到 ANNS 领域中即可以通过捕捉有意义的某点的近邻表示该向量。该论文提出了一种新的基于图的哈希方法，该方法能自动发现数据中固有的领域结构来学习适当的编码（compact codes）。具体地，该论文利用锚图来获得易于处理的低秩邻接矩阵。并通过层次阈值学习过程生成二值编码。 通过无监督的方法学习适当的紧凑代码，使原始数据空间中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AGH论文浅析">
+<meta property="og:url" content="http://lsyhprum.github.io/2021/12/01/AGH%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/index.html">
+<meta property="og:site_name" content="Lsyhprum">
+<meta property="og:description" content="Introduction 现实世界的数据大多可以用低维流形表示，具体到 ANNS 领域中即可以通过捕捉有意义的某点的近邻表示该向量。该论文提出了一种新的基于图的哈希方法，该方法能自动发现数据中固有的领域结构来学习适当的编码（compact codes）。具体地，该论文利用锚图来获得易于处理的低秩邻接矩阵。并通过层次阈值学习过程生成二值编码。 通过无监督的方法学习适当的紧凑代码，使原始数据空间中">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="d:/BLOG/source/_posts/eg1.png">
+<meta property="og:image" content="d:/BLOG/source/_posts/emp.png">
+<meta property="og:image" content="d:/BLOG/source/_posts/dim.png">
+<meta property="og:image" content="d:/BLOG/source/_posts/hit.png">
+<meta property="og:image" content="d:/BLOG/source/_posts/hit2.png">
+<meta property="og:image" content="d:/BLOG/source/_posts/eg2.png">
+<meta property="article:published_time" content="2021-12-01T11:48:03.000Z">
+<meta property="article:modified_time" content="2021-12-01T12:34:30.753Z">
+<meta property="article:author" content="Lsyhprum">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="d:/BLOG/source/_posts/eg1.png">
+
+<link rel="canonical" href="http://lsyhprum.github.io/2021/12/01/AGH%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>AGH论文浅析 | Lsyhprum</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lsyhprum</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/12/01/AGH%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lsyhprum">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lsyhprum">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AGH论文浅析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-12-01 19:48:03 / 修改时间：20:34:30" itemprop="dateCreated datePublished" datetime="2021-12-01T19:48:03+08:00">2021-12-01</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="introduction">Introduction</h1>
+<p>现实世界的数据大多可以用低维流形表示，具体到 ANNS 领域中即可以通过捕捉有意义的某点的近邻表示该向量。该论文提出了一种新的基于图的哈希方法，该方法能自动发现数据中固有的领域结构来学习适当的编码（compact codes）。具体地，该论文利用锚图来获得易于处理的低秩邻接矩阵。并通过层次阈值学习过程生成二值编码。</p>
+<p>通过无监督的方法学习适当的紧凑代码，使原始数据空间中的近邻在汉明空间中保持相邻。（谱哈希--&gt;均匀分布）</p>
+<p>求解拉普拉斯特征向量</p>
+<p>样本外扩展</p>
+<p>如何捕捉有意义的近邻。</p>
+<p>本文主要针对 <strong>K-近邻图（K-NNG）构建算法</strong> 存在的几个问题：</p>
+<ul>
+<li>需要全局索引信息，<strong>不适合大规模数据</strong></li>
+<li><strong>只适用于特定度量方法</strong></li>
+<li>构建时<strong>较高的时间复杂度</strong></li>
+</ul>
+<p>提出了一种基于 <strong>局部搜索</strong> 的 K-NNG 构建算法——<strong>NN-Descent</strong>。该算法可用于大规模数据、适用于任意的度量方法且构建时间复杂度降低至 O(<span class="math inline">\(n^{1.14}\)</span>)。</p>
+<span id="more"></span>
+<h1 id="nn-descent">NN-Descent</h1>
+<ul>
+<li><p><strong>Base Algorithm——a neighbor of a neighbor is also likely to be a neighbor</strong></p>
+<p>NN-Descent 的中心思想即通过类似梯度下降的局部搜索方法迭代地优化近邻图。</p>
+<blockquote>
+<p><strong>Data</strong>: dataset V, similarity oracle σ, K</p>
+<p><strong>Result</strong>: K-NN list B</p>
+<p>begin</p>
+<p>　　B[v] ← Sample(V,K) × {∞}, ∀v ∈ V // 构造随机初始图</p>
+<p>　　loop</p>
+<p>　　　　R ← Reverse(B) // 更新反向集（以 v 为终点的起点集合）</p>
+<p>　　　　<span class="math inline">\(\overline B\)</span>[v] ← B[v] ∪ R[v], ∀v ∈ V; // 获取和 v 存在连边的点集</p>
+<p>　　　　c ← 0 // 初始化近邻更新次数</p>
+<p>　　　　for v ∈ V do</p>
+<p>　　　　　for <span class="math inline">\(u_1\)</span> ∈ <span class="math inline">\(\overline B\)</span>[v], <span class="math inline">\(u_2\)</span> ∈ <span class="math inline">\(\overline B\)</span>[<span class="math inline">\(u_1\)</span>] do // 当前点 v 与邻居的邻居进行距离比较，并更新 v 的近邻集</p>
+<p>　　　　　　l ← σ(v, <span class="math inline">\(u_2\)</span>)</p>
+<p>　　　　　　c ← c +UpdateNN(B[v], &lt;<span class="math inline">\(u_2\)</span>, l&gt;)</p>
+<p>　　　　return B if c = 0 // 没有可更新点，终止迭代操作</p>
+<p>function Reverse(B) // 计算反向集</p>
+<p>begin</p>
+<p>　　R[v] ← {u | &lt;v, · · ·&gt; ∈ B[u]} ∀v ∈ V</p>
+<p>return R</p>
+<p>function UpdateNN(H, &lt;u, l, . . .&gt;) // 返回候选集是否更新</p>
+<p>Update K-NN heap H; return 1 if changed, or 0 if not.</p>
+</blockquote></li>
+<li><p><strong>Local Join——let my neighbors acquaint each other</strong></p>
+<p>局部连接改进了基础算法的遍历方式。</p>
+<blockquote>
+<p>// 基础算法遍历方式</p>
+<p>for v ∈ V do</p>
+<p>​ for <span class="math inline">\(u_1\)</span> ∈ <span class="math inline">\(\overline B\)</span>[v], <span class="math inline">\(u_2\)</span> ∈ <span class="math inline">\(\overline B\)</span>[<span class="math inline">\(u_1\)</span>] do // 当前点与邻居的邻居进行比较</p>
+<p>​ l ← σ(v, <span class="math inline">\(u_2\)</span>)</p>
+<p>​ c ← c +UpdateNN(B[v], &lt;<span class="math inline">\(u_2\)</span>, l&gt;)</p>
+<p>// 局部连接遍历方式</p>
+<p>for v ∈ V do</p>
+<p>　　for <span class="math inline">\(u_1\)</span>, <span class="math inline">\(u_2\)</span> ∈ <span class="math inline">\(\overline B\)</span>[v] do // 当前点的邻居间进行相互比较</p>
+<p>　　　　l ← σ(<span class="math inline">\(u_1\)</span>, <span class="math inline">\(u_2\)</span>)</p>
+<p>　　　　c ← c +UpdateNN(B[<span class="math inline">\(u_1\)</span>], &lt;<span class="math inline">\(u_2\)</span>, l&gt;)</p>
+<p>　　　　c ← c +UpdateNN(B[<span class="math inline">\(u_2\)</span>], &lt;<span class="math inline">\(u_1\)</span>, l&gt;)</p>
+</blockquote>
+<p>举个栗子，以下图为例，基本算法通过 <strong>当前点 <span class="math inline">\(a\)</span> </strong> 与 <strong>邻居的邻居 <span class="math inline">\(c\)</span> </strong> 进行比较的方法更新 <span class="math inline">\(a\)</span> 的近邻集；局部连接则是对 <span class="math inline">\(a\)</span> 近邻集内 <strong>不同的邻居 <span class="math inline">\(d\)</span> 和 <span class="math inline">\(b\)</span></strong> 进行相似度计算和更新，类似的，a 和 c 将作为 b 的邻居相互比较。</p>
+<p><img src="D:/BLOG/source/_posts/eg1.png" alt="eg1" style="zoom: 67%;" /></p>
+<p>通过改进，局部连接减少了迭代时访问点的个数：如果每一个点平均有 <span class="math inline">\(K\)</span> 个邻居，基础算法每次迭代将访问 <span class="math inline">\(K^2\)</span> 个点；而局部连接每次迭代只需要访问 <span class="math inline">\(K\)</span> 个点。在实际应用中有两点好处：</p>
+<ul>
+<li>单机部署情况下，运用 <strong>Cache 访问的局部性原理</strong> 提高了命中率，优化了构建效率</li>
+<li>分布式部署时，能有效减少节点间 <strong>数据复制</strong> 带来的性能损耗</li>
+</ul></li>
+<li><p><strong>Incremental Search——record neighbors' name</strong></p>
+<p>基础算法中存在大量的冗余计算，在 ANNS 中距离计算是耗费时间的主要原因，应尽量减少。</p>
+<p><strong>增量搜索</strong> 通过在近邻数据结构中 <strong>增加访问标记</strong>，减少重复计算。具体而言，新近邻标记初始化为 true，在参与过至少一轮局部连接过程后，标记为 false。在局部连接过程中，两个近邻只有存在至少一个未访问才进行距离计算。</p></li>
+<li><p><strong>Sampling——old friends and new friends</strong></p>
+<p>为了进一步减少计算量，论文中通过 <strong>随机采样</strong> 的方法减少了需要比较的候选点个数。实现中通过取样率 ρ 来进行精度和速度的 trade-off。</p></li>
+<li><p><strong>Early Termination——done is better than perfect</strong></p>
+<p>基础算法中，若某次迭代近邻图未更新则算法终止。然而，近邻搜索算法随着召回率逼近 100%，需要更多次迭代才能获得略微提升，一般考虑到召回率和搜索性能的取舍，这些后续的提升效果很小的迭代并没有执行的必要。</p>
+<p>为了解决这个问题，在每次迭代中，统计近邻图更新次数 count，当 count &lt; δKN 时终止程序。其中 δ 是精度参数，它粗略反应了由于提前终止允许错过的真正的近邻的比例。</p></li>
+<li><p><strong>Full Algorithm</strong></p>
+<blockquote>
+<p><strong>Data</strong>: dataset V, similarity oracle σ, K, ρ, δ // ρ 取样率、δ 精度参数</p>
+<p><strong>Result</strong>: K-NN list B</p>
+<p>begin</p>
+<p>　　B[v] ← Sample(V,K) × {&lt;∞, true&gt;} ∀v ∈ V</p>
+<p>　　loop</p>
+<p>　　　　parallel for v ∈ V do</p>
+<p>　　　　　　// 增量搜索，根据是否访问过将候选集分为两部分</p>
+<p>　　　　　　old[v] ← all items in B[v] with a false flag // 增量搜索</p>
+<p>　　　　　　new[v] ← ρK items in B[v] with a true flag // 采样</p>
+<p>　　　　　　Mark sampled items in B[v] as false;</p>
+<p>　　　　old′ ← Reverse(old), new′ ← Reverse(new) // 更新反向集</p>
+<p>　　　　c ← 0 //update counter</p>
+<p>　　　　parallel for v ∈ V do // 混合候选集和反向集</p>
+<p>　　　　　　old[v] ← old[v] ∪ Sample(old′[v], ρK)</p>
+<p>　　　　　　new[v] ← new[v] ∪ Sample(new′[v], ρK)</p>
+<p>　　　　　　for <span class="math inline">\(u_1, u_2\)</span> ∈ new[v], <span class="math inline">\(u_1 &lt; u_2\)</span> or <span class="math inline">\(u_1\)</span> ∈ new[v], <span class="math inline">\(u_2\)</span> ∈ old[v] do // 局部连接</p>
+<p>　　　　　　　　l ← σ(<span class="math inline">\(u_1, u_2\)</span>)</p>
+<p>　　　　　　　　// c and B[.] are synchronized.</p>
+<p>　　　　　　　　c ← c+UpdateNN(B[<span class="math inline">\(u_1\)</span>], &lt; u2, l, true &gt;)</p>
+<p>　　　　　　　　c ← c+UpdateNN(B[<span class="math inline">\(u_2\)</span>], &lt; u1, l, true &gt;)</p>
+<p>　　return B if c &lt; δNK // 提前终止</p>
+</blockquote></li>
+</ul>
+<h1 id="nn-descent-on-high-dimensional-data">NN-Descent on High-Dimensional Data</h1>
+<p><strong>高维诅咒</strong> 对各种机器学习方法和任务带来了严重挑战，其主要体现在两方面：</p>
+<ul>
+<li><p><strong>Distance concentration</strong></p>
+<p>高维数据中所有点对间的距离趋于相等；</p></li>
+<li><p><strong>Hubness</strong></p>
+<p>该性质与最近邻有关，具体表现在，维度会影响 <strong>k-occurrences（一个点在数据集中其他点的k-近邻中出现的次数）</strong> 的分布。随着维度的升高，将会出现 <strong>hubs（具有非常高的 k-occurrences 的点）</strong>。</p>
+<p>举个栗子~</p>
+<p>令 <span class="math inline">\(N_k=n\)</span> 表示为某点被算入 k 近邻的次数为 <span class="math inline">\(n\)</span>，<span class="math inline">\(p(N_k=n)\)</span> 表示为 <span class="math inline">\(N_k=n\)</span> 的点占全部数据的比例。</p>
+<p><img src="D:/BLOG/source/_posts/emp.png" alt="dim" style="zoom: 50%;" /></p>
+<p>由上图可以看出，随着维度的增加，出现明显的 <strong>zipf 效应</strong>。k-occurrences 很小的点数量变多；k-occurrences 很大的点数量变少，但 k-occurrences 的程度越来越大。</p>
+<p><del>随着████, 富人越来越富, 但是数量变少；而穷人还是一样的穷，且数量增多。</del></p></li>
+</ul>
+<p>NN-Descent 虽然实现了较低的构建时间复杂度，在大多数数据集上为 O(<span class="math inline">\(n^{1.14}\)</span>)，且易于并行。然而，该算法在本征维度较高的数据集上表现较差。</p>
+<p><img src="D:/BLOG/source/_posts/dim.png" alt="dim" style="zoom: 100%;" /></p>
+<p><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3227609.3227643">NN-Descent on High-Dimensional Data</a> 认为高维数据下 K-NNG 的 <strong>Hubness</strong> 现象主要从以下两方面影响 NN-Descent 的性能：</p>
+<ul>
+<li><p>由于 NN-Descent 每次迭代根据候选集和反向集进行优化，因此，越多次出现在其他点候选集和反向集的点更新次数越多。Hubness 较低的点出现在其他点的候选集中的概率很低，它将仅作为其他点反向集（质量较低）中的点出现并被更新。</p>
+<p><img src="D:/BLOG/source/_posts/hit.png" alt="hit" style="zoom: 33%;" /></p></li>
+<li><p>低 Hubness 点命中偏差较大，一些具有低 Hubness 点具有高命中，而其他低 Hubness 点可能具有非常低的命中。</p>
+<p><img src="D:/BLOG/source/_posts/hit2.png" alt="hit2" style="zoom: 40%;" /></p>
+<p>由于 NN-Descent 初始图为随机 K-NNG，如果某点位于初始随机图中的高质量邻域中，则更可能产生高命中数。否则，该点将很快从其他点候选集中删除，并被困在不是其真实邻居的点的反向集中，导致该点更新的概率相对较低。</p></li>
+</ul>
+<p>该论文针对 Hubness 现象对 NN-Descent 进行优化，提高了召回率，但增加了构建时间。究其本质，该算法是 <strong>通过非均匀候选选择策略</strong> 以实现更好的性能。</p>
+<h1 id="appendix">Appendix</h1>
+<ul>
+<li><p><strong>理论推导</strong></p>
+<ul>
+<li><p>假设数据集 <span class="math inline">\(V\)</span> 半径为 <span class="math inline">\(r\)</span>，数据集 <span class="math inline">\(V\)</span> 中各点 <span class="math inline">\(v\)</span> 在 <span class="math inline">\(K\)</span> 近邻图<span class="math inline">\(（K=c^3）\)</span>中的 <span class="math inline">\(K\)</span> 近邻集合由 <span class="math inline">\(B_K(v)\)</span> 表示， <span class="math inline">\(v\)</span> 邻居的邻居的集合表示为 <span class="math inline">\(B&#39;[v]=\cup_{v&#39;\in B[v]} B[v&#39;]\)</span>；</p></li>
+<li><p>只要近邻数量 <span class="math inline">\(K\)</span> 足够多，且满足如下三个条件：</p>
+<ul>
+<li><span class="math inline">\(B[v]\)</span> 包含的 <span class="math inline">\(K\)</span> 个邻居均匀分布在 <span class="math inline">\(B_r(v)\)</span> 中;</li>
+<li>每个点分布位置相互独立;</li>
+<li><span class="math inline">\(K &lt;&lt; |B_{r/2}(v)|\)</span>;</li>
+</ul>
+<p>则<strong>即使从随机 <span class="math inline">\(K\)</span> 近邻图开始，通过探索每个点 <span class="math inline">\(v\)</span> 邻居的邻居 <span class="math inline">\(B&#39;[v]\)</span> ，总可以找到 <span class="math inline">\(v\)</span> 的处于半径为 <span class="math inline">\(r/2\)</span> 范围内的 <span class="math inline">\(K\)</span> 近邻 <span class="math inline">\(B_{r/2}(v)\)</span>；通过不断重复上述过程，每个点的邻居集到该点的距离会不断收缩，最终，形成一个高质量近似 K-NNG</strong>。</p></li>
+<li><p>详细证明：</p>
+<ul>
+<li><p>若 $B_{r/2}(v) $ 中的一点 <span class="math inline">\(u\)</span>，<span class="math inline">\(B&#39;[v]\)</span> 中也包含，则至少需要存在一点 <span class="math inline">\(v&#39;\)</span>，使得 <span class="math inline">\(v&#39; \in B[v]\)</span>，且 <span class="math inline">\(u \in B[v&#39;]\)</span>。接下来，只需找到满足上述条件的 <span class="math inline">\(v&#39;\)</span>（<span class="math inline">\(v&#39; \in B_{r/2}(v))\)</span>，其有以下三个不等式成立：</p>
+<ul>
+<li><p><span class="math inline">\(v&#39; \in B_r(v), P\{v&#39; \in B[v]\} \geq K/|B_r(v)|\)</span>。</p>
+<blockquote>
+<p>若 <span class="math inline">\(v\)</span> 的 <span class="math inline">\(K\)</span> 个邻居都在 <span class="math inline">\(B_r(v)\)</span> 中，则共有 <span class="math inline">\(C^K_{|B_r(v)|}\)</span> 种情况，而 <span class="math inline">\(B_r(v)\)</span> 中一点不是 <span class="math inline">\(v\)</span> 的邻居的情况共有 <span class="math inline">\(C^K_{|B_r(v)|-1}\)</span> 种，因此 <span class="math inline">\(B_r(v)\)</span> 中一点不是 <span class="math inline">\(v\)</span> 的邻居的概率为 <span class="math inline">\(C^K_{|B_r(v)|-1} / C^K_{|B_r(v)|}\)</span> ， 而 <span class="math inline">\(B_r(v)\)</span> 中一点是 <span class="math inline">\(v\)</span> 的邻居的概率为 <span class="math inline">\(1-C^K_{|B_r(v)|-1} / C^K_{|B_r(v)|}\)</span>，即 <span class="math inline">\(K/B_r(v)\)</span>;</p>
+</blockquote></li>
+<li><p><span class="math inline">\(d(u,v&#39;) \leq d(u,v) + d(v,v&#39;) \leq r,P\{u \in B[v&#39;]\} \geq K/|B_r(v&#39;)|\)</span>。</p>
+<blockquote>
+<p>由第一条不等式可知，<span class="math inline">\(B_r(v&#39;)\)</span> 中的一点是 <span class="math inline">\(v&#39;\)</span> 的邻居的概率为 <span class="math inline">\(K/|B_r(v&#39;)|\)</span>，由于 <span class="math inline">\(u\)</span> 和 <span class="math inline">\(v&#39;\)</span> 的距离小于等于 <span class="math inline">\(r\)</span>，因此 <span class="math inline">\(u\)</span> 是 <span class="math inline">\(v&#39;\)</span> 的邻居的概率大于等于 <span class="math inline">\(K/|B_r(v&#39;)|\)</span>；</p>
+</blockquote></li>
+<li><p><span class="math inline">\(|B_r(v) \leq c|B_{r/2}(v)|, |B_r(v&#39;) \leq c|B_{r/2}(v&#39;)| \leq c|B_r(v)| \leq c^2|B_{r/2}(v)|\)</span>。</p>
+<blockquote>
+<p>由于 <span class="math inline">\(v&#39;\)</span> 在 <span class="math inline">\(v\)</span> 的 <span class="math inline">\(r/2\)</span> 超球中，<span class="math inline">\(v&#39;\)</span> 的 <span class="math inline">\(r/2\)</span> 超球一定包含于 <span class="math inline">\(v\)</span> 的 <span class="math inline">\(r\)</span> 超球中。</p>
+</blockquote></li>
+</ul>
+<p><img src="D:/BLOG/source/_posts/eg2.png" alt="eg2" style="zoom:67%;" /></p></li>
+<li><p>由以上三个不等式可得：<span class="math inline">\(P\{v&#39;\in B[v] \land u \in B[v&#39;]\} \geq K/ |B_{r/2}(v)|^2\)</span>，因此，当 <span class="math inline">\(v\)</span> 的邻居从 <span class="math inline">\(B_{r/2}(v)\)</span> 中取时，在 <span class="math inline">\(B_{r/2}(v)\)</span> 中的一点 <span class="math inline">\(u\)</span> 属于 <span class="math inline">\(v\)</span> 的邻居的邻居的概率为：<span class="math inline">\(P\{u\in B&#39;[v]\} \geq 1- (1-K/|B_{r/2}(v)|^2)^{|B_{r/2}(v)} \approx K/|B_{r/2}(v)|\)</span></p></li>
+</ul></li>
+</ul></li>
+<li><p><strong>代码实现</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 近邻数据结构</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">nhood</span>&#123;</span></span><br><span class="line">  std::mutex lock;				  <span class="comment">// 锁对象</span></span><br><span class="line">  std::vector&lt;Neighbor&gt; pool;	  <span class="comment">// 结果集</span></span><br><span class="line">  <span class="keyword">unsigned</span> M;					  <span class="comment">// 结果集大小，便于并发实现</span></span><br><span class="line">  std::vector&lt;<span class="keyword">unsigned</span>&gt; nn_old;	  <span class="comment">// 已访问近邻</span></span><br><span class="line">  std::vector&lt;<span class="keyword">unsigned</span>&gt; nn_new;	  <span class="comment">// 未访问近邻，即新的出边集合</span></span><br><span class="line">  std::vector&lt;<span class="keyword">unsigned</span>&gt; rnn_old;  <span class="comment">// 旧反向集</span></span><br><span class="line">  std::vector&lt;<span class="keyword">unsigned</span>&gt; rnn_new;  <span class="comment">// 新反向集，即新的采样入边集合，</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 更新结果集操作，通过维护一个 大顶堆 实现</span></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">insert</span> <span class="params">(<span class="keyword">unsigned</span> id, <span class="keyword">float</span> dist)</span> </span>&#123;</span><br><span class="line">    <span class="function">LockGuard <span class="title">guard</span><span class="params">(lock)</span></span>;</span><br><span class="line">    <span class="keyword">if</span> (dist &gt; pool.<span class="built_in">front</span>().distance) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">unsigned</span> i=<span class="number">0</span>; i&lt;pool.<span class="built_in">size</span>(); i++)&#123;</span><br><span class="line">      <span class="keyword">if</span>(id == pool[i].id)<span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(pool.<span class="built_in">size</span>() &lt; pool.<span class="built_in">capacity</span>())&#123;</span><br><span class="line">      pool.<span class="built_in">push_back</span>(<span class="built_in">Neighbor</span>(id, dist, <span class="literal">true</span>));</span><br><span class="line">      std::<span class="built_in">push_heap</span>(pool.<span class="built_in">begin</span>(), pool.<span class="built_in">end</span>());</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">      std::<span class="built_in">pop_heap</span>(pool.<span class="built_in">begin</span>(), pool.<span class="built_in">end</span>());</span><br><span class="line">      pool[pool.<span class="built_in">size</span>()<span class="number">-1</span>] = <span class="built_in">Neighbor</span>(id, dist, <span class="literal">true</span>);</span><br><span class="line">      std::<span class="built_in">push_heap</span>(pool.<span class="built_in">begin</span>(), pool.<span class="built_in">end</span>());</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 局部连接</span></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> C&gt;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">join</span> <span class="params">(C callback)</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">unsigned</span> <span class="keyword">const</span> i: nn_new) &#123;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">unsigned</span> <span class="keyword">const</span> j: nn_new) &#123;</span><br><span class="line">        <span class="keyword">if</span> (i &lt; j) &#123;</span><br><span class="line">          <span class="built_in">callback</span>(i, j);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">unsigned</span> j: nn_old) &#123;</span><br><span class="line">        <span class="built_in">callback</span>(i, j);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 集中进行局部连接，更新各点近邻，便于并发实现</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">IndexGraph::join</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> omp parallel for default(shared) schedule(dynamic, 100)</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">unsigned</span> n = <span class="number">0</span>; n &lt; nd_; n++) &#123;</span><br><span class="line">    graph_[n].<span class="built_in">join</span>([&amp;](<span class="keyword">unsigned</span> i, <span class="keyword">unsigned</span> j) &#123;</span><br><span class="line">      <span class="keyword">if</span>(i != j)&#123;</span><br><span class="line">        <span class="keyword">float</span> dist = distance_-&gt;<span class="built_in">compare</span>(data_ + i * dimension_, data_ + j * dimension_, dimension_);</span><br><span class="line">        graph_[i].<span class="built_in">insert</span>(j, dist);</span><br><span class="line">        graph_[j].<span class="built_in">insert</span>(i, dist);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">IndexGraph::update</span><span class="params">(<span class="keyword">const</span> Parameters &amp;parameters)</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// 清空暂存数据结构 nn_new, nn_old</span></span><br><span class="line">  ...</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// 统计结果集元素数量</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> omp parallel for</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">unsigned</span> n = <span class="number">0</span>; n &lt; nd_; ++n) &#123;</span><br><span class="line">    <span class="keyword">auto</span> &amp;nn = graph_[n];</span><br><span class="line">    std::<span class="built_in">sort</span>(nn.pool.<span class="built_in">begin</span>(), nn.pool.<span class="built_in">end</span>());</span><br><span class="line">    <span class="keyword">if</span>(nn.pool.<span class="built_in">size</span>()&gt;L)nn.pool.<span class="built_in">resize</span>(L);</span><br><span class="line">    nn.pool.<span class="built_in">reserve</span>(L);</span><br><span class="line">    <span class="keyword">unsigned</span> maxl = std::<span class="built_in">min</span>(nn.M + S, (<span class="keyword">unsigned</span>) nn.pool.<span class="built_in">size</span>());</span><br><span class="line">    <span class="keyword">unsigned</span> c = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">unsigned</span> l = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> ((l &lt; maxl) &amp;&amp; (c &lt; S)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (nn.pool[l].flag) ++c;</span><br><span class="line">      ++l;</span><br><span class="line">    &#125;</span><br><span class="line">    nn.M = l;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> omp parallel for</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">unsigned</span> n = <span class="number">0</span>; n &lt; nd_; ++n) &#123;</span><br><span class="line">    <span class="keyword">auto</span> &amp;nnhd = graph_[n];			  <span class="comment">// 当前点近邻数据结构</span></span><br><span class="line">    <span class="keyword">auto</span> &amp;nn_new = nnhd.nn_new;</span><br><span class="line">    <span class="keyword">auto</span> &amp;nn_old = nnhd.nn_old;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">unsigned</span> l = <span class="number">0</span>; l &lt; nnhd.M; ++l) &#123;		<span class="comment">// 遍历当前点候选集</span></span><br><span class="line">      <span class="keyword">auto</span> &amp;nn = nnhd.pool[l];</span><br><span class="line">      <span class="keyword">auto</span> &amp;nhood_o = graph_[nn.id];  <span class="comment">// 邻居的邻居</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (nn.flag) &#123;				  <span class="comment">// 新候选点</span></span><br><span class="line">        nn_new.<span class="built_in">push_back</span>(nn.id);</span><br><span class="line">        <span class="keyword">if</span> (nn.distance &gt; nhood_o.pool.<span class="built_in">back</span>().distance) &#123;</span><br><span class="line">          <span class="comment">// 更改候选点数据，可能产生冲突，提前加锁</span></span><br><span class="line">          <span class="function">LockGuard <span class="title">guard</span><span class="params">(nhood_o.lock)</span></span>;</span><br><span class="line">          <span class="comment">// 将当前点加入候选点反向集</span></span><br><span class="line">          <span class="keyword">if</span>(nhood_o.rnn_new.<span class="built_in">size</span>() &lt; R)nhood_o.rnn_new.<span class="built_in">push_back</span>(n);</span><br><span class="line">          <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">unsigned</span> <span class="keyword">int</span> pos = <span class="built_in">rand</span>() % R;</span><br><span class="line">            nhood_o.rnn_new[pos] = n;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        nn.flag = <span class="literal">false</span>;			  <span class="comment">// 更新候选点访问状态</span></span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;						  <span class="comment">// 旧候选点</span></span><br><span class="line">        nn_old.<span class="built_in">push_back</span>(nn.id);</span><br><span class="line">        <span class="keyword">if</span> (nn.distance &gt; nhood_o.pool.<span class="built_in">back</span>().distance) &#123;</span><br><span class="line">          <span class="function">LockGuard <span class="title">guard</span><span class="params">(nhood_o.lock)</span></span>;</span><br><span class="line">          <span class="keyword">if</span>(nhood_o.rnn_old.<span class="built_in">size</span>() &lt; R)nhood_o.rnn_old.<span class="built_in">push_back</span>(n);</span><br><span class="line">          <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">unsigned</span> <span class="keyword">int</span> pos = <span class="built_in">rand</span>() % R;</span><br><span class="line">            nhood_o.rnn_old[pos] = n;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    std::<span class="built_in">make_heap</span>(nnhd.pool.<span class="built_in">begin</span>(), nnhd.pool.<span class="built_in">end</span>());</span><br><span class="line">  &#125;</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// 反向集随机采样，并混合反向集和候选集</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> omp parallel for</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">unsigned</span> i = <span class="number">0</span>; i &lt; nd_; ++i) &#123;</span><br><span class="line">    <span class="keyword">auto</span> &amp;nn_new = graph_[i].nn_new;</span><br><span class="line">    <span class="keyword">auto</span> &amp;nn_old = graph_[i].nn_old;</span><br><span class="line">    <span class="keyword">auto</span> &amp;rnn_new = graph_[i].rnn_new;</span><br><span class="line">    <span class="keyword">auto</span> &amp;rnn_old = graph_[i].rnn_old;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (R &amp;&amp; rnn_new.<span class="built_in">size</span>() &gt; R) &#123;</span><br><span class="line">      std::<span class="built_in">random_shuffle</span>(rnn_new.<span class="built_in">begin</span>(), rnn_new.<span class="built_in">end</span>());</span><br><span class="line">      rnn_new.<span class="built_in">resize</span>(R);</span><br><span class="line">    &#125;</span><br><span class="line">    nn_new.<span class="built_in">insert</span>(nn_new.<span class="built_in">end</span>(), rnn_new.<span class="built_in">begin</span>(), rnn_new.<span class="built_in">end</span>());</span><br><span class="line">    <span class="keyword">if</span> (R &amp;&amp; rnn_old.<span class="built_in">size</span>() &gt; R) &#123;</span><br><span class="line">      std::<span class="built_in">random_shuffle</span>(rnn_old.<span class="built_in">begin</span>(), rnn_old.<span class="built_in">end</span>());</span><br><span class="line">      rnn_old.<span class="built_in">resize</span>(R);</span><br><span class="line">    &#125;</span><br><span class="line">    nn_old.<span class="built_in">insert</span>(nn_old.<span class="built_in">end</span>(), rnn_old.<span class="built_in">begin</span>(), rnn_old.<span class="built_in">end</span>());</span><br><span class="line">    <span class="keyword">if</span>(nn_old.<span class="built_in">size</span>() &gt; R * <span class="number">2</span>)&#123;nn_old.<span class="built_in">resize</span>(R * <span class="number">2</span>);nn_old.<span class="built_in">reserve</span>(R*<span class="number">2</span>);&#125;</span><br><span class="line">    std::vector&lt;<span class="keyword">unsigned</span>&gt;().<span class="built_in">swap</span>(graph_[i].rnn_new);</span><br><span class="line">    std::vector&lt;<span class="keyword">unsigned</span>&gt;().<span class="built_in">swap</span>(graph_[i].rnn_old);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr />
+<p><em>Bibliography</em>：</p>
+<p><strong>Title</strong>: <a target="_blank" rel="noopener" href="https://doi.org/10.1145/1963405.1963487">Efficient k-nearest neighbor graph construction for generic similarity measures.</a></p>
+<p><strong>Affiliations</strong>: <em>Princeton University</em></p>
+<p><strong>Journal</strong>: <em>WWW'2011</em></p>
+<p><strong>Key Words</strong>：<em>arbitrary similarity measure, iterative method, k-nearest neighbor graph, information storage and retrieval.</em></p>
+<p><br/></p>
+<p><em>References</em>：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/ZJULearning/efanna_graph">efanna_graph</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/aaalgo/kgraph">KGraph: A Library for Approximate Nearest Neighbor Search</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/whenever5225/article/details/105598694">NN-Descent构建K近邻图——论文超详细注解</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/50697030">[论文笔记] Hubs in Space</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/25/LLE/" rel="prev" title="LLE">
+      <i class="fa fa-chevron-left"></i> LLE
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/03/DIM-RED%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" rel="next" title="DIM-RED论文浅析">
+      DIM-RED论文浅析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nn-descent"><span class="nav-number">2.</span> <span class="nav-text">NN-Descent</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nn-descent-on-high-dimensional-data"><span class="nav-number">3.</span> <span class="nav-text">NN-Descent on High-Dimensional Data</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#appendix"><span class="nav-number">4.</span> <span class="nav-text">Appendix</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lsyhprum</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lsyhprum</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

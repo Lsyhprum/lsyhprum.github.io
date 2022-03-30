@@ -267,7 +267,7 @@ mjx-container[display="true"] + br {
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/09/02/PQ%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2022/03/28/A-Note-on-Graph-Based-Nearest-Neighbor-Search/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -281,7 +281,150 @@ mjx-container[display="true"] + br {
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/02/PQ%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">PQ论文浅析</a>
+            <a href="/2022/03/28/A-Note-on-Graph-Based-Nearest-Neighbor-Search/" class="post-title-link" itemprop="url">A Note on Graph-Based Nearest Neighbor Search</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-28 14:44:23 / 修改时间：15:12:57" itemprop="dateCreated datePublished" datetime="2022-03-28T14:44:23+08:00">2022-03-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>introduction</p>
+<p>该论文提出了一种新的解释图算法表现的解释，KNN 图的聚簇系数</p>
+<p>查询点周围的局部连接对召回有更直接的影响，高聚簇系数使得查询点最近邻中大多数位于图中的最大强连通分量中。</p>
+<p>从算法的角度，搜索过程实际上是由两个阶段组成的，一个在 Max SCC 外，另一个在其中。</p>
+<p>高聚类系数导致 MAX SCC 大小较大，因此在两阶段搜索过程中提供了良好的答案质量。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2022/03/04/GraSP%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lsyhprum">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lsyhprum">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/04/GraSP%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">GraSP论文浅析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-04 09:06:06 / 修改时间：09:43:38" itemprop="dateCreated datePublished" datetime="2022-03-04T09:06:06+08:00">2022-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ANNS/" itemprop="url" rel="index"><span itemprop="name">ANNS</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ANNS/GRAPH-BASED/" itemprop="url" rel="index"><span itemprop="name">GRAPH-BASED</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="introduction">Introduction</h1>
+<p>该论文认为基于图的NNS算法的边缘访问分布具有很大的偏斜，因此可以利用查询分布对不必要的边进行剪枝以避免图遍历过程中的冗余计算。该论文将图修剪看做离散优化问题，并引入图优化算法 GraSP，通过学习修剪冗余边来提高相似图的搜索效率。GraSP利用概率模型增强了现有相似度图。然后，它执行一个新的子图采样和迭代精化优化，以显式最大化搜索效率，当移除一个图的期望边子集时，对于一个大集的训练查询。评价结果表明， GraSP算法在不降低准确度的前提下，能够持续提高实际数据集的搜索效率，搜索速度比现有方法快2.24倍。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/03/04/GraSP%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2022/02/18/HVS%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lsyhprum">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lsyhprum">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/02/18/HVS%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">HVS论文浅析</a>
         </h2>
 
         <div class="post-meta">
@@ -291,14 +434,419 @@ mjx-container[display="true"] + br {
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-09-02 11:11:54" itemprop="dateCreated datePublished" datetime="2021-09-02T11:11:54+08:00">2021-09-02</time>
+              <time title="创建时间：2022-02-18 15:14:30" itemprop="dateCreated datePublished" datetime="2022-02-18T15:14:30+08:00">2022-02-18</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-10 09:50:02" itemprop="dateModified" datetime="2021-09-10T09:50:02+08:00">2021-09-10</time>
+                <time title="修改时间：2022-03-04 17:02:23" itemprop="dateModified" datetime="2022-03-04T17:02:23+08:00">2022-03-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ANNS/" itemprop="url" rel="index"><span itemprop="name">ANNS</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ANNS/GRAPH-BASED/" itemprop="url" rel="index"><span itemprop="name">GRAPH-BASED</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="introduction">Introduction</h1>
+<p>基于图的 ANNS 方法大多侧重于缩短搜索路径，忽视了每一跳的计算成本。因此，该论文提出了两项改进：</p>
+<ul>
+<li>分层图结构 HVS，从粗到细进行子空间划分</li>
+<li>基于密度的分配策略，减少底层数据个数</li>
+<li>在每一层中使用虚拟 Voronoi 图加速搜索</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/02/18/HVS%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/12/03/DIM-RED%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lsyhprum">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lsyhprum">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/03/DIM-RED%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">DIM-RED论文浅析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-12-03 09:53:57 / 修改时间：10:31:33" itemprop="dateCreated datePublished" datetime="2021-12-03T09:53:57+08:00">2021-12-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ANNS/" itemprop="url" rel="index"><span itemprop="name">ANNS</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ANNS/GRAPH-BASED/" itemprop="url" rel="index"><span itemprop="name">GRAPH-BASED</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="introduction">Introduction</h1>
+<p>该论文对 <strong>基于近邻图的 ANNS 算法进行理论分析</strong>，主要关注致密均匀数据下（<span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.566ex" xmlns="http://www.w3.org/2000/svg" width="10.664ex" height="2.262ex" role="img" focusable="false" viewBox="0 -750 4713.6 1000"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D451" d="M366 683Q367 683 438 688T511 694Q523 694 523 686Q523 679 450 384T375 83T374 68Q374 26 402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487H491Q506 153 506 145Q506 140 503 129Q490 79 473 48T445 8T417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157Q33 205 53 255T101 341Q148 398 195 420T280 442Q336 442 364 400Q369 394 369 396Q370 400 396 505T424 616Q424 629 417 632T378 637H357Q351 643 351 645T353 664Q358 683 366 683ZM352 326Q329 405 277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q233 26 290 98L298 109L352 326Z"></path></g><g data-mml-node="mo" transform="translate(797.8,0)"><path data-c="226A" d="M639 -48Q639 -54 634 -60T619 -67H618Q612 -67 536 -26Q430 33 329 88Q61 235 59 239Q56 243 56 250T59 261Q62 266 336 415T615 567L619 568Q622 567 625 567Q639 562 639 548Q639 540 633 534Q632 532 374 391L117 250L374 109Q632 -32 633 -34Q639 -40 639 -48ZM944 -48Q944 -54 939 -60T924 -67H923Q917 -67 841 -26Q735 33 634 88Q366 235 364 239Q361 243 361 250T364 261Q367 266 641 415T920 567L924 568Q927 567 930 567Q944 562 944 548Q944 540 938 534Q937 532 679 391L422 250L679 109Q937 -32 938 -34Q944 -40 944 -48Z"></path></g><g data-mml-node="mi" transform="translate(2075.6,0)"><path data-c="1D459" d="M117 59Q117 26 142 26Q179 26 205 131Q211 151 215 152Q217 153 225 153H229Q238 153 241 153T246 151T248 144Q247 138 245 128T234 90T214 43T183 6T137 -11Q101 -11 70 11T38 85Q38 97 39 102L104 360Q167 615 167 623Q167 626 166 628T162 632T157 634T149 635T141 636T132 637T122 637Q112 637 109 637T101 638T95 641T94 647Q94 649 96 661Q101 680 107 682T179 688Q194 689 213 690T243 693T254 694Q266 694 266 686Q266 675 193 386T118 83Q118 81 118 75T117 65V59Z"></path></g><g data-mml-node="mi" transform="translate(2373.6,0)"><path data-c="1D45C" d="M201 -11Q126 -11 80 38T34 156Q34 221 64 279T146 380Q222 441 301 441Q333 441 341 440Q354 437 367 433T402 417T438 387T464 338T476 268Q476 161 390 75T201 -11ZM121 120Q121 70 147 48T206 26Q250 26 289 58T351 142Q360 163 374 216T388 308Q388 352 370 375Q346 405 306 405Q243 405 195 347Q158 303 140 230T121 120Z"></path></g><g data-mml-node="mi" transform="translate(2858.6,0)"><path data-c="1D454" d="M311 43Q296 30 267 15T206 0Q143 0 105 45T66 160Q66 265 143 353T314 442Q361 442 401 394L404 398Q406 401 409 404T418 412T431 419T447 422Q461 422 470 413T480 394Q480 379 423 152T363 -80Q345 -134 286 -169T151 -205Q10 -205 10 -137Q10 -111 28 -91T74 -71Q89 -71 102 -80T116 -111Q116 -121 114 -130T107 -144T99 -154T92 -162L90 -164H91Q101 -167 151 -167Q189 -167 211 -155Q234 -144 254 -122T282 -75Q288 -56 298 -13Q311 35 311 43ZM384 328L380 339Q377 350 375 354T369 368T359 382T346 393T328 402T306 405Q262 405 221 352Q191 313 171 233T151 117Q151 38 213 38Q269 38 323 108L331 118L384 328Z"></path></g><g data-mml-node="mo" transform="translate(3335.6,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(3724.6,0)"><path data-c="1D45B" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mo" transform="translate(4324.6,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g></g></g></svg></mjx-container></span>）贪婪算法、长边和集束搜索的作用。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/12/03/DIM-RED%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/12/01/AGH%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lsyhprum">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lsyhprum">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/01/AGH%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">AGH论文浅析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-12-01 19:48:03 / 修改时间：20:34:30" itemprop="dateCreated datePublished" datetime="2021-12-01T19:48:03+08:00">2021-12-01</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="introduction">Introduction</h1>
+<p>现实世界的数据大多可以用低维流形表示，具体到 ANNS 领域中即可以通过捕捉有意义的某点的近邻表示该向量。该论文提出了一种新的基于图的哈希方法，该方法能自动发现数据中固有的领域结构来学习适当的编码（compact codes）。具体地，该论文利用锚图来获得易于处理的低秩邻接矩阵。并通过层次阈值学习过程生成二值编码。</p>
+<p>通过无监督的方法学习适当的紧凑代码，使原始数据空间中的近邻在汉明空间中保持相邻。（谱哈希--&gt;均匀分布）</p>
+<p>求解拉普拉斯特征向量</p>
+<p>样本外扩展</p>
+<p>如何捕捉有意义的近邻。</p>
+<p>本文主要针对 <strong>K-近邻图（K-NNG）构建算法</strong> 存在的几个问题：</p>
+<ul>
+<li>需要全局索引信息，<strong>不适合大规模数据</strong></li>
+<li><strong>只适用于特定度量方法</strong></li>
+<li>构建时<strong>较高的时间复杂度</strong></li>
+</ul>
+<p>提出了一种基于 <strong>局部搜索</strong> 的 K-NNG 构建算法——<strong>NN-Descent</strong>。该算法可用于大规模数据、适用于任意的度量方法且构建时间复杂度降低至 O(<span class="math inline">\(n^{1.14}\)</span>)。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/12/01/AGH%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/11/25/LLE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lsyhprum">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lsyhprum">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/25/LLE/" class="post-title-link" itemprop="url">LLE</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-11-25 10:04:33 / 修改时间：14:31:44" itemprop="dateCreated datePublished" datetime="2021-11-25T10:04:33+08:00">2021-11-25</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="introduction">Introduction</h1>
+<p>局部拟合是无监督流形学习方法的核心思想，大多数方法主要考虑增加类间距离和减少类内距离，局部线性嵌入（LLE）在嵌入空间中保留数据的 <strong>局部结构</strong>，从而使得高维空间中的近邻在低维嵌入空间中彼此接近，远点相互远离。本文对 LLE 及其变体进行总结，主要包括以下几个部分：</p>
+<ul>
+<li>LLE 和 kernel LLE</li>
+<li>增量 LLE</li>
+<li>最优参数选择方法</li>
+<li>监督和半监督 LLE</li>
+<li>鲁棒 LLE : 可靠性权重</li>
+<li>加权 LLE</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/11/25/LLE/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/11/19/SCANN%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lsyhprum">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lsyhprum">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/19/SCANN%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">SCANN论文浅析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-11-19 10:03:15 / 修改时间：15:03:45" itemprop="dateCreated datePublished" datetime="2021-11-19T10:03:15+08:00">2021-11-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ANNS/" itemprop="url" rel="index"><span itemprop="name">ANNS</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ANNS/QUANTIZATION-BASED/" itemprop="url" rel="index"><span itemprop="name">QUANTIZATION-BASED</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="introduction">Introduction</h1>
+<p>当前 <strong>最大内积搜索（MIPS）量化方法</strong> 大多以重构误差作为指标优化搜索精度，但该论文认为，重构误差并不等效于搜索精度，内积不同的点，对应的量化误差重要性不同。本文在量化时对重构误差加权，从而改善上述问题。</p>
+<p><img src="ScaNN tom export.gif" alt="scann" style="zoom:70%;"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/11/19/SCANN%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/10/28/AQ%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lsyhprum">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lsyhprum">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/28/AQ%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">AQ论文浅析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-28 09:37:45" itemprop="dateCreated datePublished" datetime="2021-10-28T09:37:45+08:00">2021-10-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-11-05 15:33:19" itemprop="dateModified" datetime="2021-11-05T15:33:19+08:00">2021-11-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -326,10 +874,96 @@ mjx-container[display="true"] + br {
 
       
           <h1 id="introduction">Introduction</h1>
-<p>乘积量化（PQ）核心思想是 <strong>将空间分解为低维子空间的笛卡尔积，并将每个子空间分别量化</strong>。向量由其对应的多个子空间量化编码组成的编码表示，可以有效地估计出两个矢量之间的欧氏距离。此外，PQ 的 <strong>非对称计算</strong> 通过比较 <strong>向量和量化编码</strong> 而非编码和编码间的近似距离提高了精度。实验结果表明，PQ 能够有效地搜索最近邻。</p>
+<p>加性量化（AQ）使用 <strong>不同码本的编码和</strong> 近似高维向量。基于这一基础思想，论文提出了一种新的向量编码和码本学习算法，能够最小化编码误差。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/02/PQ%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/2021/10/28/AQ%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/09/02/PQ%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lsyhprum">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lsyhprum">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/02/PQ%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">PQ相关论文浅析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-02 11:11:54" itemprop="dateCreated datePublished" datetime="2021-09-02T11:11:54+08:00">2021-09-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-11-04 16:57:53" itemprop="dateModified" datetime="2021-11-04T16:57:53+08:00">2021-11-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ANNS/" itemprop="url" rel="index"><span itemprop="name">ANNS</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ANNS/QUANTIZATION-BASED/" itemprop="url" rel="index"><span itemprop="name">QUANTIZATION-BASED</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="introduction">Introduction</h1>
+<p>乘积量化（PQ）的核心思想是 <strong>将空间分解为低维子空间的笛卡尔积，并将每个子空间分别量化</strong>。原始向量由对应子空间质心重构成的编码近似表示。相比于其他 ANNS 算法，该类方法 <strong>内存开销小，数据修改灵活</strong>，因此在工业界广泛应用。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/09/02/PQ%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -384,7 +1018,7 @@ mjx-container[display="true"] + br {
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-27 10:29:35" itemprop="dateModified" datetime="2021-09-27T10:29:35+08:00">2021-09-27</time>
+                <time title="修改时间：2022-03-11 18:07:22" itemprop="dateModified" datetime="2022-03-11T18:07:22+08:00">2022-03-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -412,8 +1046,7 @@ mjx-container[display="true"] + br {
 
       
           <h1 id="introduction">Introduction</h1>
-<p>基于图的 ANNS 算法在速度和准确率的权衡（trade-offs）中取得了卓越的效果，然而该类方法在 <strong>内存占用和可扩展性等方面表现较差</strong>，难以在大规模数据上应用。</p>
-<p>该论文结合量化（内存占用小）和图（搜索效果好）算法，提出了 <strong>量化回归</strong> 策略，<strong>利用图结构改进压缩编码</strong>。对数据进行显著压缩的同时提供了较高的搜索精度。</p>
+<p>基于图的 ANNS 算法在速度和准确率的权衡（trade-offs）中取得了卓越的效果，但 <strong>内存开销</strong> 非常大，难以应用于大规模数据集。该论文结合量化（内存占用小）和图（搜索效果好）算法，<strong>利用图结构改进压缩编码的相似性估计</strong>。在显著降低内存开销的同时提供了较高的搜索性能。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/09/01/Link-Code%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
@@ -436,544 +1069,11 @@ mjx-container[display="true"] + br {
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/08/29/MRNG%E4%B8%AD%E7%9A%84%E5%86%B2%E7%AA%81%E8%8A%82%E7%82%B9/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Lsyhprum">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lsyhprum">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/29/MRNG%E4%B8%AD%E7%9A%84%E5%86%B2%E7%AA%81%E8%8A%82%E7%82%B9/" class="post-title-link" itemprop="url">MRNG中的冲突节点</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-08-29 21:21:20" itemprop="dateCreated datePublished" datetime="2021-08-29T21:21:20+08:00">2021-08-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-10 09:50:02" itemprop="dateModified" datetime="2021-09-10T09:50:02+08:00">2021-09-10</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ANNS/" itemprop="url" rel="index"><span itemprop="name">ANNS</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ANNS/GRAPH-BASED/" itemprop="url" rel="index"><span itemprop="name">GRAPH-BASED</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="introduction">Introduction</h1>
-<p>该论文从理论上证明了 MRNG 在近邻图上良好的搜索性能，并该论文提出了一种称为 <strong>冲突节点</strong> 的 MRNG 隐藏结构，并从理论上证明了如何利用冲突节点改进基于 MRNG 的 ANNS 算法。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/29/MRNG%E4%B8%AD%E7%9A%84%E5%86%B2%E7%AA%81%E8%8A%82%E7%82%B9/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/07/13/DiskANN%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Lsyhprum">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lsyhprum">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/13/DiskANN%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">DiskANN论文浅析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-07-13 16:24:09" itemprop="dateCreated datePublished" datetime="2021-07-13T16:24:09+08:00">2021-07-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-10 09:50:02" itemprop="dateModified" datetime="2021-09-10T09:50:02+08:00">2021-09-10</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ANNS/" itemprop="url" rel="index"><span itemprop="name">ANNS</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ANNS/GRAPH-BASED/" itemprop="url" rel="index"><span itemprop="name">GRAPH-BASED</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="introduction">Introduction</h1>
-<p>多数 ANNS 算法 <strong>索引必须存储在主存</strong> 中，并不适用于大规模数据。因此该论文设计了一种可以利用 <strong>固态硬盘</strong> 的 ANNS 系统，并提出了一种改进图索引性能的方法。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/13/DiskANN%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/07/07/NSSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Lsyhprum">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lsyhprum">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/07/NSSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">NSSG论文浅析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-07-07 17:30:54" itemprop="dateCreated datePublished" datetime="2021-07-07T17:30:54+08:00">2021-07-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-10 09:50:02" itemprop="dateModified" datetime="2021-09-10T09:50:02+08:00">2021-09-10</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ANNS/" itemprop="url" rel="index"><span itemprop="name">ANNS</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ANNS/GRAPH-BASED/" itemprop="url" rel="index"><span itemprop="name">GRAPH-BASED</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="introduction">Introduction</h2>
-<p>该论文提出了一种 <strong>新的图索引结构 SSG 及其近似版本 NSSG</strong>，用于解决 NSG 存在的三个问题：</p>
-<ul>
-<li>检索 <strong>数据库外查询点</strong> 没有理论保证</li>
-<li><strong>过于稀疏</strong></li>
-<li><strong>索引构建时间复杂度高</strong></li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/07/NSSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/07/05/NSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Lsyhprum">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lsyhprum">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/05/NSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">NSG论文浅析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-07-05 19:49:47" itemprop="dateCreated datePublished" datetime="2021-07-05T19:49:47+08:00">2021-07-05</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-14 21:06:59" itemprop="dateModified" datetime="2021-09-14T21:06:59+08:00">2021-09-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ANNS/" itemprop="url" rel="index"><span itemprop="name">ANNS</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ANNS/GRAPH-BASED/" itemprop="url" rel="index"><span itemprop="name">GRAPH-BASED</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="introduction">Introduction</h1>
-<p>该论文提出一种新的理论图索引结构 <strong>MRNG</strong>，具有如下优点：</p>
-<ul>
-<li><p>通过裁边算法降低了平均出度，降低了 <strong>内存占用</strong>；</p></li>
-<li><p>确保图的连通性，缩短了搜索路径，提高了 <strong>搜索效率</strong>；</p></li>
-</ul>
-<p>并在 MRNG 的基础上设计了实际应用的近似版本 <strong>NSG</strong>，进一步降低了索引构建复杂度。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/05/NSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/07/03/FANNG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Lsyhprum">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lsyhprum">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/03/FANNG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">FANNG论文浅析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-07-03 11:47:50" itemprop="dateCreated datePublished" datetime="2021-07-03T11:47:50+08:00">2021-07-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-12 15:11:47" itemprop="dateModified" datetime="2021-09-12T15:11:47+08:00">2021-09-12</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ANNS/" itemprop="url" rel="index"><span itemprop="name">ANNS</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ANNS/GRAPH-BASED/" itemprop="url" rel="index"><span itemprop="name">GRAPH-BASED</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="introduction">Introduction</h1>
-<p>该论文提出了一种 <strong>有向图结构</strong>，该结构具有两个优点：</p>
-<ul>
-<li>最小化与树结构相关的回溯成本</li>
-<li>更好的利用本征维度信息，提升了算法效率</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/03/FANNG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lsyhprum.github.io/2021/07/01/NN-Descent%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Lsyhprum">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lsyhprum">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/01/NN-Descent%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">NN-Descent论文浅析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-07-01 19:05:36" itemprop="dateCreated datePublished" datetime="2021-07-01T19:05:36+08:00">2021-07-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-12 12:49:42" itemprop="dateModified" datetime="2021-09-12T12:49:42+08:00">2021-09-12</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ANNS/" itemprop="url" rel="index"><span itemprop="name">ANNS</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ANNS/GRAPH-BASED/" itemprop="url" rel="index"><span itemprop="name">GRAPH-BASED</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="introduction">Introduction</h1>
-<p>本文主要针对 <strong>K-近邻图（K-NNG）构建算法</strong> 存在的几个问题：</p>
-<ul>
-<li>需要全局索引信息，<strong>不适合大规模数据</strong></li>
-<li><strong>只适用于特定度量方法</strong></li>
-<li>构建时<strong>较高的时间复杂度</strong></li>
-</ul>
-<p>提出了一种基于 <strong>局部搜索</strong> 的 K-NNG 构建算法——<strong>NN-Descent</strong>。该算法可用于大规模数据、适用于任意的度量方法且构建时间复杂度降低至 O(<span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.025ex" xmlns="http://www.w3.org/2000/svg" width="4.39ex" height="1.929ex" role="img" focusable="false" viewBox="0 -841.7 1940.2 852.7"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msup"><g data-mml-node="mi"><path data-c="1D45B" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="TeXAtom" transform="translate(633,363) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path><path data-c="2E" d="M78 60Q78 84 95 102T138 120Q162 120 180 104T199 61Q199 36 182 18T139 0T96 17T78 60Z" transform="translate(500,0)"></path><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z" transform="translate(778,0)"></path><path data-c="34" d="M462 0Q444 3 333 3Q217 3 199 0H190V46H221Q241 46 248 46T265 48T279 53T286 61Q287 63 287 115V165H28V211L179 442Q332 674 334 675Q336 677 355 677H373L379 671V211H471V165H379V114Q379 73 379 66T385 54Q393 47 442 46H471V0H462ZM293 211V545L74 212L183 211H293Z" transform="translate(1278,0)"></path></g></g></g></g></g></svg></mjx-container></span>)。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/01/NN-Descent%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
 
 
 
@@ -1038,7 +1138,7 @@ mjx-container[display="true"] + br {
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1051,7 +1151,7 @@ mjx-container[display="true"] + br {
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1078,7 +1178,7 @@ mjx-container[display="true"] + br {
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
