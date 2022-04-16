@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
+<meta name="generator" content="Hexo 5.4.2">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"lsyhprum.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Introduction 乘积量化（PQ）的核心思想是 将空间分解为低维子空间的笛卡尔积，并将每个子空间分别量化。原始向量由对应子空间质心重构成的编码近似表示。相比于其他 ANNS 算法，该类方法 内存开销小，数据修改灵活，因此在工业界广泛应用。">
+  <meta name="description" content="Introduction 乘积量化（PQ）的核心思想是 将空间分解为低维子空间的笛卡尔积，并将每个子空间分别量化。原始向量由对应子空间质心重构成的编码近似表示。相比于其他 ANNS 算法，该类方法 内存开销小，数据修改灵活，因此在工业界广泛应用。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PQ相关论文浅析">
 <meta property="og:url" content="http://lsyhprum.github.io/2021/09/02/PQ%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/index.html">
 <meta property="og:site_name" content="Lsyhprum">
-<meta property="og:description" content="Introduction 乘积量化（PQ）的核心思想是 将空间分解为低维子空间的笛卡尔积，并将每个子空间分别量化。原始向量由对应子空间质心重构成的编码近似表示。相比于其他 ANNS 算法，该类方法 内存开销小，数据修改灵活，因此在工业界广泛应用。">
+<meta property="og:description" content="Introduction 乘积量化（PQ）的核心思想是 将空间分解为低维子空间的笛卡尔积，并将每个子空间分别量化。原始向量由对应子空间质心重构成的编码近似表示。相比于其他 ANNS 算法，该类方法 内存开销小，数据修改灵活，因此在工业界广泛应用。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://lsyhprum.github.io/2021/09/02/PQ%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/pq.png">
 <meta property="og:image" content="http://lsyhprum.github.io/2021/09/02/PQ%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/mse.png">
@@ -40,9 +40,10 @@
 <meta property="og:image" content="http://lsyhprum.github.io/2021/09/02/PQ%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/DIM-GROUPING.png">
 <meta property="og:image" content="http://lsyhprum.github.io/2021/09/02/PQ%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/itq.png">
 <meta property="article:published_time" content="2021-09-02T03:11:54.000Z">
-<meta property="article:modified_time" content="2021-11-04T08:57:53.200Z">
+<meta property="article:modified_time" content="2022-04-16T12:42:37.542Z">
 <meta property="article:author" content="Lsyhprum">
-<meta property="article:tag" content="VQ, TPAMI">
+<meta property="article:tag" content="VQ">
+<meta property="article:tag" content="TPAMI">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://lsyhprum.github.io/2021/09/02/PQ%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/pq.png">
 
@@ -316,7 +317,7 @@ mjx-container[display="true"] + br {
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-11-04 16:57:53" itemprop="dateModified" datetime="2021-11-04T16:57:53+08:00">2021-11-04</time>
+                <time title="修改时间：2022-04-16 20:42:37" itemprop="dateModified" datetime="2022-04-16T20:42:37+08:00">2022-04-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -450,7 +451,8 @@ mjx-container[display="true"] + br {
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/VQ-TPAMI/" rel="tag"># VQ, TPAMI</a>
+              <a href="/tags/VQ/" rel="tag"># VQ</a>
+              <a href="/tags/TPAMI/" rel="tag"># TPAMI</a>
           </div>
 
         
@@ -538,20 +540,20 @@ mjx-container[display="true"] + br {
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
