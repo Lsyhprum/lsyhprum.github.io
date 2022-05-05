@@ -20,16 +20,16 @@
     var CONFIG = {"hostname":"lsyhprum.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Introduction 该论文提出了一种 新的图索引结构 SSG 及其近似版本 NSSG，用于解决 NSG 存在的三个问题：  检索 数据库外查询点 没有理论保证 过于稀疏 索引构建时间复杂度高">
+  <meta name="description" content="Introduction 该论文针对 NSG 存在的三个问题：  检索 数据库外查询点 没有理论保证 过于稀疏 索引构建时间复杂度高  提出了 新的图索引结构 SSG 及其近似版本 NSSG。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="TPAMI&#39;21-High Dimensional Similarity Search with Satellite System Graph">
 <meta property="og:url" content="http://lsyhprum.github.io/2021/07/07/NSSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/index.html">
 <meta property="og:site_name" content="Lsyhprum">
-<meta property="og:description" content="Introduction 该论文提出了一种 新的图索引结构 SSG 及其近似版本 NSSG，用于解决 NSG 存在的三个问题：  检索 数据库外查询点 没有理论保证 过于稀疏 索引构建时间复杂度高">
+<meta property="og:description" content="Introduction 该论文针对 NSG 存在的三个问题：  检索 数据库外查询点 没有理论保证 过于稀疏 索引构建时间复杂度高  提出了 新的图索引结构 SSG 及其近似版本 NSSG。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://lsyhprum.github.io/2021/07/07/NSSG%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/SSG.png">
 <meta property="article:published_time" content="2021-07-07T09:30:54.000Z">
-<meta property="article:modified_time" content="2022-04-16T12:42:37.542Z">
+<meta property="article:modified_time" content="2022-05-05T13:36:05.884Z">
 <meta property="article:author" content="Lsyhprum">
 <meta property="article:tag" content="RNG">
 <meta property="article:tag" content="TPAMI">
@@ -306,7 +306,7 @@ mjx-container[display="true"] + br {
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-16 20:42:37" itemprop="dateModified" datetime="2022-04-16T20:42:37+08:00">2022-04-16</time>
+                <time title="修改时间：2022-05-05 21:36:05" itemprop="dateModified" datetime="2022-05-05T21:36:05+08:00">2022-05-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -334,12 +334,13 @@ mjx-container[display="true"] + br {
 
       
         <h1 id="introduction">Introduction</h1>
-<p>该论文提出了一种 <strong>新的图索引结构 SSG 及其近似版本 NSSG</strong>，用于解决 NSG 存在的三个问题：</p>
+<p>该论文针对 NSG 存在的三个问题：</p>
 <ul>
 <li>检索 <strong>数据库外查询点</strong> 没有理论保证</li>
 <li><strong>过于稀疏</strong></li>
 <li><strong>索引构建时间复杂度高</strong></li>
 </ul>
+<p>提出了 新的图索引结构 <strong>SSG</strong> 及其近似版本 <strong>NSSG</strong>。</p>
 <span id="more"></span>
 <h1 id="comparison-with-existing-methods">Comparison with existing methods</h1>
 <ul>
@@ -361,7 +362,6 @@ mjx-container[display="true"] + br {
 <h1 id="appendix">Appendix</h1>
 <ul>
 <li><strong>理论推导</strong></li>
-<li></li>
 </ul>
 <hr>
 <p><em>Bibliography</em>：</p>
@@ -398,8 +398,8 @@ mjx-container[display="true"] + br {
       <i class="fa fa-chevron-left"></i> VLDB'19-Fast Approximate Nearest Neighbor Search With The Navigating Spreading-out Graph
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/07/13/DiskANN%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" rel="next" title="DiskANN论文浅析">
-      DiskANN论文浅析 <i class="fa fa-chevron-right"></i>
+    <a href="/2021/08/29/MRNG%E4%B8%AD%E7%9A%84%E5%86%B2%E7%AA%81%E8%8A%82%E7%82%B9/" rel="next" title="MRNG中的冲突节点">
+      MRNG中的冲突节点 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -473,20 +473,20 @@ mjx-container[display="true"] + br {
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

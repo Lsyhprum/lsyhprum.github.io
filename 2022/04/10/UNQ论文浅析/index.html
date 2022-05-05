@@ -20,16 +20,16 @@
     var CONFIG = {"hostname":"lsyhprum.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Introduction 该论文提出了一种基于 多码本量化 的无监督 DNN 架构。 Related work 现有的降维方法可以分为两个独立的研究方向：  二进制散列：将原始向量映射到汉明空间，并尽量降低在原始空间中相近的数据在汉明空间中的距离，该类方法受益于现代 CPU 的架构，可以进行高效的计算； 多码本量化：通过对来自几个不相交码本的码字进行求和或串联近似原始向量，这类方法通常不涉及查询端">
+  <meta name="description" content="Introduction 该论文提出了一种基于 多码本量化 的无监督 DNN 架构。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ICCV&#39;19-Unsupervised Neural Quantization for Compressed-Domain Similarity Search">
 <meta property="og:url" content="http://lsyhprum.github.io/2022/04/10/UNQ%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/index.html">
 <meta property="og:site_name" content="Lsyhprum">
-<meta property="og:description" content="Introduction 该论文提出了一种基于 多码本量化 的无监督 DNN 架构。 Related work 现有的降维方法可以分为两个独立的研究方向：  二进制散列：将原始向量映射到汉明空间，并尽量降低在原始空间中相近的数据在汉明空间中的距离，该类方法受益于现代 CPU 的架构，可以进行高效的计算； 多码本量化：通过对来自几个不相交码本的码字进行求和或串联近似原始向量，这类方法通常不涉及查询端">
+<meta property="og:description" content="Introduction 该论文提出了一种基于 多码本量化 的无监督 DNN 架构。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://lsyhprum.github.io/2022/04/10/UNQ%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/arch.png">
 <meta property="article:published_time" content="2022-04-10T07:58:11.000Z">
-<meta property="article:modified_time" content="2022-04-16T12:42:37.554Z">
+<meta property="article:modified_time" content="2022-05-05T13:36:05.896Z">
 <meta property="article:author" content="Lsyhprum">
 <meta property="article:tag" content="VQ">
 <meta property="article:tag" content="ICCV">
@@ -49,7 +49,7 @@
   };
 </script>
 
-  <title>ICCV'19-Unsupervised Neural Quantization for Compressed-Domain Similarity Search | Lsyhprum</title>
+  <title>ICCV'19-Unsupervised Neural Quantization for Compressed-Domain Similarity Search | Lsyhprum</title><meta name="robots" content="noindex">
   
 
 
@@ -306,7 +306,7 @@ mjx-container[display="true"] + br {
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-16 20:42:37" itemprop="dateModified" datetime="2022-04-16T20:42:37+08:00">2022-04-16</time>
+                <time title="修改时间：2022-05-05 21:36:05" itemprop="dateModified" datetime="2022-05-05T21:36:05+08:00">2022-05-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -335,6 +335,7 @@ mjx-container[display="true"] + br {
       
         <h1 id="introduction">Introduction</h1>
 <p>该论文提出了一种基于 <strong>多码本量化</strong> 的无监督 DNN 架构。</p>
+<span id="more"></span>
 <h1 id="related-work">Related work</h1>
 <p>现有的降维方法可以分为两个独立的研究方向：</p>
 <ul>
@@ -358,7 +359,7 @@ mjx-container[display="true"] + br {
 <p>论文中采用了两种距离函数训练模型，第一距离函数在原始空间中定义，使用类似自动编码器的目标进行训练：</p>
 <p>然而这种方法不能保证最小化这个目标会导致好的候选会进入重排阶段，因此，论文中采用最小化学习空间中的三元组损失函数，使得其更接近真实近邻而非负样本</p></li>
 </ul>
-
+<!-- flag of hidden posts -->
     </div>
 
     
@@ -375,13 +376,6 @@ mjx-container[display="true"] + br {
 
 
         
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2022/04/07/Learning-to-Route%E8%AE%BA%E6%96%87%E6%B5%85%E6%9E%90/" rel="prev" title="ICML'19-Learning to Route in Similarity Graphs">
-      <i class="fa fa-chevron-left"></i> ICML'19-Learning to Route in Similarity Graphs
-    </a></div>
-      <div class="post-nav-item"></div>
-    </div>
       </footer>
     
   </article>
@@ -453,20 +447,20 @@ mjx-container[display="true"] + br {
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
