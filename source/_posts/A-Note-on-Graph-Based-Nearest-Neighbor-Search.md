@@ -2,6 +2,7 @@
 title: A Note on Graph-Based Nearest Neighbor Search
 date: 2022-03-28 14:44:23
 tags:
+hidden: true
 ---
 
 introduction

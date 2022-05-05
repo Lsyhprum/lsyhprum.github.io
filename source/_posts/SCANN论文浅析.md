@@ -1,36 +1,56 @@
 ---
-title: SCANN论文浅析
+title: ICML'20-Accelerating large-scale inference with anisotropic vector quantization
 date: 2021-11-19 10:03:15
 categories:
 - [ANNS, QUANTIZATION-BASED]
 tags:
-- VQ, ICML
+- VQ
+- ICML
 mathjax: true
+hidden: true
 ---
 
-# Introduction
+# TL;DR
 
-当前 **最大内积搜索（MIPS）量化方法** 大多以重构误差作为指标优化搜索精度，但该论文认为，重构误差并不等效于搜索精度，内积不同的点，对应的量化误差重要性不同。本文在量化时对重构误差加权，从而改善上述问题。
-
-<img src="ScaNN tom export.gif" alt="scann" style="zoom:70%;" />
+当前 **最大内积搜索（MIPS）量化方法** 大多以重构误差作为指标优化搜索精度，但本文认为，重构误差并不等效于搜索精度，内积不同的点对应的量化误差重要性不同。本文在量化时对重构误差加权，从而改善上述问题。
 
 <!--more-->
 
 
 
----
+# MIPS & NNS
 
+以内积（IP）为距离度量的近邻搜索方法被称为最大内积搜索（MIPS），其与最近邻搜索（NNS）的区别就在于距离度量不同：MIPS 以内积（IP）为距离度量，NNS 一般通过欧式距离或余弦距离进行计算。
 
+<img src="ScaNN tom export.gif" alt="scann" style="zoom:100%;" />
 
-# MIPS
+一般而言，**NNS 可以简单的转换为 MIPS 问题**。具体地，对于给定空间 $\mathbb{R}^d$ 下的 $d$ 维向量 $x=\{x_1,x_2,\cdots,x_d\}$ 和查询向量 $q \in \mathbb{R}^d$，L2范数归一化后分别表示为 $x'$ 和 $q'$，其中：
 
-以内积（IP）为距离度量的最近邻搜索被称为最大内积搜索（MIPS）。考虑具有 $n$ 个向量的数据集 $X=\{x_i\}_{i=1,2,...,n}$，每个向量 $x_i \in \mathbb{R}^d$ 位于 $d$ 维向量空间。对于给定的查询向量 $q \in \mathbb{R}^d$，MIPS 希望找到和 $q$ 具有最高内积的数据点 $x\in X$，即：
+$cos(x,q)=\frac{x \cdot q}{\parallel x \parallel \parallel q \parallel}=\frac{\sum_1^n{(x_i \times q_i)}}{\parallel x \parallel \parallel q \parallel}=\sum_1^n\frac{{x_i}}{\parallel x \parallel} \times \frac{{q_i}}{\parallel q \parallel}=cos(x',q')$
 
-$x^*_i:=argmax_{x_i \in X} \left<q,x_i\right>$。
+则，归一化向量间的余弦距离可以转化为内积：
 
-在数据库中向量模长相等的情况下，NNS 和 MIPS 是等价的：
+$cos(x',q')=\frac{x' \cdot q'}{\parallel x' \parallel \parallel q' \parallel}=\frac{\sum_1^n{(x'_i \times q'_i)}}{\parallel x' \parallel \parallel q' \parallel}=\sum_1^n\frac{{x'_i}}{\parallel x' \parallel} \times \frac{{q'_i}}{\parallel q' \parallel}=\langle x',q' \rangle$
 
- $x^*_i:=argmin_{x\in X}||q-x||^2=(||x||^2-2q^Tx)$ 
+归一化向量间的 L2 和余弦距离、内积等价：
+
+$\parallel x'-q'\parallel^2=\parallel x'\parallel^2+\parallel q'\parallel^2-2\langle x',q' \rangle=2-2\langle x',q' \rangle=2(1-cos(x',q'))$ 
+
+**然而，从 MIPS 转化为 NNS 却存在很多问题**。现有方法试图通过对向量补全将 MIPS 转化为 NNS，即：
+
+$\hat{x}=(x,\sqrt{1-\parallel x \parallel^2})^T, \hat{q}=(q,0)^T, \parallel x \parallel \leq 1, \parallel q \parallel = 1$
+
+在上述条件下，l2-norm 和内积等价：
+
+$\parallel \hat{x}-\hat{q} \parallel^2=\parallel \hat{x} \parallel ^2 + \parallel \hat{q} \parallel^2 - 2\langle \hat{x}, \hat{q} \rangle = 2-2\langle x,q \rangle$
+
+但是上述条件较为苛刻（内积无法使用L2范数归一化，只能使用同比例缩放），因此，上述公式可以泛化为：
+
+$\hat{x}=(x,\sqrt{1-\parallel x \parallel^2})^T, \hat{q}=(q,\sqrt{1-\parallel q \parallel^2})^T, \parallel x \parallel \leq 1, \parallel q \parallel \leq 1$
+
+$\parallel \hat{x}-\hat{q} \parallel^2 = 2-2\langle x,q \rangle - 2 \sqrt{1-\parallel x \parallel^2} \sqrt{1-\parallel q \parallel^2} = -(\parallel x \parallel \parallel q \parallel \cos \alpha+2 \sqrt{1-\parallel x \parallel^2} \sqrt{1-\parallel q \parallel^2})$
+
+显然，这种转换方法存在误差，并且随着维度的增加逐渐加大。具体地，维度越高，邻近（内积大）的 $x$ 和 $q$ 间的余弦值会越来越小，后项逐渐成为主导，然而，前项才是我们希望关注的。
 
 
 
@@ -64,9 +84,11 @@ $\mathbb{E}_q \sum_\limits{i=1}^n (\left< q,x_i\right>-\left< q,\hat{x}_i\right>
 
 [Announcing ScaNN: Efficient Vector Similarity Search](http://ai.googleblog.com/2020/07/announcing-scann-efficient-vector.html)
 
-[最近邻搜索(NN)、最大内积搜索（MIPS）与(A)LSH算法](https://zhuanlan.zhihu.com/p/111502331)
+[Non-metric Similarity Graphs for Maximum Inner Product Search](https://proceedings.neurips.cc/paper/2018/file/229754d7799160502a143a72f6789927-Paper.pdf)
 
 [各向同性的高斯分布是指协方差矩阵是对角阵么，这个各向同性有什么直观含义呢？](https://www.zhihu.com/question/343638697/answer/1107095192)
+
+
 
 
 

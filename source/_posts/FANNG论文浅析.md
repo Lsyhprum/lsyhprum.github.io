@@ -87,7 +87,7 @@ mathjax: true
 
   该论文认为理想近邻图的平均度数和本征维度相关，并使用 Hausdorff 维数进行估计：$D(r_1,r_2)=\frac{log(\frac{n(r1)}{n(r2)})}{log(\frac{r1}{r2})}$。具体地，该方法通过计算数据集中所有数据两两之间的距离，统计小于阈值 r 的成对距离的数量 $n(r)$ 估计本征维度。
 
-  <img src="hausdorff.png" alt="hausdorff" style="zoom:100%;" />
+  <img src="hausdorff.png" alt="hausdorff" style="zoom:80%;" />
 
 * **Making nearest neighbor guarantees**
 

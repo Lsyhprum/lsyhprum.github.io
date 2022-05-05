@@ -7,11 +7,14 @@ tags:
 - ICCV
 - VQ
 mathjax: true
+hidden: true
 ---
 
 # Introduction
 
 该论文提出了一种基于 **多码本量化** 的无监督 DNN 架构。
+
+<!--more-->
 
 # Related work
 

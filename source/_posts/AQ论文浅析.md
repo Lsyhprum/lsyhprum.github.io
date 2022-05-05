@@ -5,6 +5,7 @@ categories:
 - [ANNS, QUANTIZATION-BASED]
 tags:
 - VQ, CVPR
+hidden: true
 ---
 
 # Introduction

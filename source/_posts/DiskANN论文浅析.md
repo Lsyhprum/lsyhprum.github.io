@@ -6,6 +6,7 @@ categories:
 tags:
 - RNG
 mathjax: true
+hidden: true
 ---
 
 # Introduction

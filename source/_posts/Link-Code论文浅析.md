@@ -1,13 +1,14 @@
 ---
-title: Link&Code论文浅析
+title: CVPR'18-Link and code Fast indexing with graphs and compact regression codes
 date: 2021-09-01 14:07:07
 categories:
 - [ANNS, GRAPH-BASED]
 tags:
+- CVPR
 mathjax: true
 ---
 
-# Introduction
+# TL;DR
 
 基于图的 ANNS 算法在速度和准确率的权衡（trade-offs）中取得了卓越的效果，但 **内存开销** 非常大，难以应用于大规模数据集。该论文结合量化（内存占用小）和图（搜索效果好）算法，**利用图结构改进压缩编码的相似性估计**。在显著降低内存开销的同时提供了较高的搜索性能。
 

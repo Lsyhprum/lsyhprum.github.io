@@ -6,6 +6,7 @@ categories:
 tags: 
 - ML
 mathjax: true
+hidden: true
 ---
 
 # Introduction

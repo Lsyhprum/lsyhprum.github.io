@@ -1,5 +1,5 @@
 ---
-title: VLDB21-Hierarchical Graph Structure Based on Voronoi Diagrams for Solving Approximate Nearest Neighbor Search
+title: VLDB'21-Hierarchical Graph Structure Based on Voronoi Diagrams for Solving Approximate Nearest Neighbor Search
 date: 2022-02-18 15:14:30
 categories:
 - [ANNS, GRAPH-BASED]
@@ -7,6 +7,7 @@ tags:
 - VQ
 - VLDB
 mathjax: true  
+hidden: true
 ---
 
 # Introduction

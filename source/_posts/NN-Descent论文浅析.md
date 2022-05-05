@@ -122,7 +122,7 @@ mathjax: true
 
 * **Full Algorithm**
 
-  > **Data**: dataset V, similarity oracle σ, K, ρ, δ 　　　　　　　　　　　　　　　// ρ 取样率、δ 精度参数
+  > **Data**: dataset V, similarity oracle σ, K, ρ, δ 　　　　　　　　　　　　　　// ρ 取样率、δ 精度参数
   >
   > **Result**: K-NN list B 
   >
@@ -171,7 +171,7 @@ mathjax: true
 
 NN-Descent 虽然实现了较低的构建时间复杂度，在大多数数据集上为 O($n^{1.14}$)，且易于并行。然而，如下图所示，该算法在本征维度较高的数据集上表现较差。
 
-<img src="dim.png" alt="dim" style="zoom: 100%;" />
+<img src="dim.png" alt="dim" style="zoom: 90%;" />
 
 这主要是由于 **高维诅咒** 问题引起的，其表现主要体现在两个方面：
 
@@ -183,7 +183,7 @@ NN-Descent 虽然实现了较低的构建时间复杂度，在大多数数据集
 
   该性质与最近邻有关，具体表现在向量维度会影响 **k-occurrences（一个点在数据集中其他点的k-近邻中出现的次数）** 的分布。随着维度的升高，将会出现 **hubs（具有非常高的 k-occurrences 的点）**。
 
-  <img src="emp.png" alt="dim" style="zoom: 50%;" />
+  <img src="emp.png" alt="dim" style="zoom: 80%;" />
 
   令 $N_k=n$ 表示为某点被算入 k 近邻的次数为 $n$，$p(N_k=n)$ 表示 $N_k=n$ 的点占全部数据的比例。由上图可以看出，随着维度的增加，出现明显的 zipf 效应。k-occurrences 很小的点数量变多；k-occurrences 很大的点数量变少，但 k-occurrences 的程度越来越大。
 
@@ -193,11 +193,11 @@ NN-Descent 虽然实现了较低的构建时间复杂度，在大多数数据集
 
 * 由于 NN-Descent 每次迭代根据候选集和反向集进行优化，因此，多次出现在其他点候选集和反向集的点，能得到更多的更新机会。Hubness 较低的点出现在其他点的候选集中的概率很低，它将仅作为其他点反向集（质量较低）中的点出现并被更新，很容易被遗漏。
 
-  <img src="hit.png" alt="hit" style="zoom: 33%;" />
+  <img src="hit.png" alt="hit" style="zoom: 60%;" />
 
 * 低 Hubness 点命中偏差较大，一些具有低 Hubness 点具有高命中，而其他低 Hubness 点可能具有非常低的命中。
 
-  <img src="hit2.png" alt="hit2" style="zoom: 40%;" />
+  <img src="hit2.png" alt="hit2" style="zoom: 50%;" />
 
   由于 NN-Descent 初始图为随机 K-NNG，如果某点位于初始随机图中的高质量邻域中，则更可能产生高命中数。否则，该点将很快从其他点候选集中删除，并被困在不是其真实邻居的点的反向集中，导致该点更新的概率相对较低。
 
